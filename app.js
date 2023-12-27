@@ -2,23 +2,23 @@ import express from "express";
 import cookieParser from "cookie-parser";
 
 
-import { routerProfile } from "./src/router/profile";
-import { routerEducation } from "./src/router/education";
-import { routerSkill } from "./src/router/skill";
-import { routerBlog } from "./src/router/blog";
-import { routerProject } from "./src/router/project";
-import { routerAuth } from "./src/router/auth";
-import { notFound } from "./src/router/middleware/notfound";
-import { logging } from "./src/router/middleware/logging";
+import { routerProfile } from "./src/router/profile.js";
+import { routerEducation } from "./src/router/education.js";
+import { routerSkill } from "./src/router/skill.js";
+import { routerBlog } from "./src/router/blog.js";
+import { routerProject } from "./src/router/project.js";
+import { routerAuth } from "./src/router/auth.js";
+import { notFound } from "./src/middleware/notfound.js";
+import { logging } from "./src/middleware/logging.js";
 
 //deskripsi aplikasi express
 const app = express();
 
 //untuk membaca json dari body
-app.use(express.json())
+app.use(express.json());
 
 //untuk membaca cookies
-app.use(cookieParser())
+app.use(cookieParser());
 
 //belajar middleware => logging
 app.use(logging);

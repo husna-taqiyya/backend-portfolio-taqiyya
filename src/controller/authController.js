@@ -1,5 +1,6 @@
 // PATH: METHOD POST UNTUK LOGIN
 const login = (req, res) => {
+
     // CARA UNTUK KIRIM COOKIE KE CLIENT/BROWSER
     res.cookie("token", "abcdefghijklmnopqrstuvwxyz");
     res.cookie("username", "husnataqiyya");
