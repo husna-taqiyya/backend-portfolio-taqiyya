@@ -1,6 +1,14 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 
+
+import { routerProfile } from "./src/profile";
+import { routerEducation } from "./src/education";
+import { routerSkill } from "./src/skill";
+import { routerBlog } from "./src/blog";
+import { routerProject } from "./src/project";
+import { routerAuth } from "./src/auth";
+
 //deskripsi aplikasi express
 const app = express();
 
@@ -50,215 +58,23 @@ app.get('/home/', (req, res) => {
     })
 })
 
-// PATH: METHOD GET UNTUK PROFILE
-app.get('/profile/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mendapat data profile"
-    });
-});
+// ROUTER PROFILE
+app.use(routerProfile);
 
-// PATH: METHOD POST UNTUK PROFILE
-app.post('/profile/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menyimpan data profile"
-    });
-});
+// ROUTER EDUCATION
+app.use(routerEducation);
 
-// PATH: METHOD PUT UNTUK PROFILE
-app.put('/profile/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate sebagian data profile"
-    });
-});
+// ROUTER SKILL
+app.use(routerSkill);
 
-// PATH: METHOD PATCH UNTUK PROFILE
-app.patch('/profile/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate keseluruhan data profile"
-    });
-});
+// ROUTER BLOG
+app.use(routerBlog);
 
-// PATH: METHOD DELETE UNTUK PROFILE
-app.delete('/profile/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menghapus data profile"
-    });
-});
+// ROUTER PROJECT
+app.use(routerProject);
 
-
-// PATH: METHOD GET UNTUK EDUCATION
-app.get('/education/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mendapat data education"
-    });
-});
-
-// PATH: METHOD POST UNTUK EDUCATION
-app.post('/education/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menyimpan data education"
-    });
-});
-
-// PATH: METHOD PUT UNTUK EDUCATION
-app.put('/education/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate sebagian data education"
-    });
-});
-
-// PATH: METHOD PATCH UNTUK EDUCATION
-app.patch('/education/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate keseluruhan data education"
-    });
-});
-
-// PATH: METHOD DELETE UNTUK EDUCATION
-app.delete('/education/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menghapus data education"
-    });
-});
-
-
-
-
-// PATH: METHOD GET UNTUK PROJECT
-app.get('/project/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mendapat data project"
-    });
-});
-
-// PATH: METHOD POST UNTUK PROJECT
-app.post('/project/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menyimpan data project"
-    });
-});
-
-// PATH: METHOD PUT UNTUK PROJECT
-app.put('/project/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mnegupdate sebagian data project"
-    });
-});
-
-// PATH: METHOD PATCH UNTUK PROJECT
-app.patch('/project/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate keseluruhan data project"
-    });
-});
-
-// PATH: METHOD DELETE UNTUK PROJECT
-app.delete('/project/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menghapus data project"
-    });
-});
-
-
-
-// PATH: METHOD GET UNTUK PROJECT
-app.get('/skill/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mendapat data skill"
-    });
-
-});
-
-// PATH: METHOD POST UNTUK SKILL
-app.post('/skill/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menyimpan data skill"
-    });
-});
-
-// PATH: METHOD PUT UNTUK SKILL
-app.put('/skill/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate sebagian data skill"
-    });
-});
-
-// PATH: METHOD PATCH UNTUK SKILL
-app.patch('/skill/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate keseluruhan data skill"
-    });
-});
-
-// PATH: METHOD DELETE UNTUK SKILL
-app.delete('/skill/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menghapus data skill"
-    });
-});
-
-
-// PATH: METHOD GET UNTUK BLOG
-app.get('/blog/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mendapat data blog"
-    });
-});
-
-// PATH: METHOD POST UNTUK BLOG
-app.post('/blog/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berasil menyimpan data blog"
-    });
-});
-
-// PATH: METHOD PUT UNTUK BLOG
-app.put('/blog/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate sebgian data blog"
-    });
-});
-
-// PATH: METHOD PATCH UNTUK BLOG
-app.patch('/blog/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengupdate seluruh data blog"
-    });
-});
-
-// PATH: METHOD DELETE UNTUK BLOG
-app.delete('/blog/:id', (req, res) => {
-    res.status(200).json({
-        messege: "berhasil menghapus data blog"
-    });
-});
-
-
-app.get('/about', (req, res) => {
-    // res.send('<p>Halaman About</p>')
-});
-
-app.post('/login', (req, res) => {
-    // CARA UNTUK KIRIM COOKIE KE CLIENT/BROWSER
-    res.cookie("token", "abcdefghijklmnopqrstuvwxyz");
-    res.cookie("username", "husnataqiyya");
-    res.cookie("lokasi", "jakarta");
-
-    res.status(200).json({
-        messege: "Anda berhasil login"
-    })
-})
-
-//PATH: METHOD DELETE
-app.delete('/logout', (req, res) => {
-    res.clearCookie('lokasi');
-    res.clearCookie('username');
-    res.clearCookie('token');
-
-    res.status(200).json({
-        messege: "Semua data di cookie berhasil di hapus"
-    });
-});
+// ROUTER AUTH
+app.use(routerAuth);
 
 //MIDDLEWARE UNTUK PATH ASING/ UNKNOWN PAGE
 app.use((req, res) => {
