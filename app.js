@@ -46,4 +46,4 @@ app.use(notFound);
 
 app.listen(5000, () => {
     console.info("App is running in http://localhost:5000");
-})
+});
