@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config();
+
 import express from "express";
 import cookieParser from "cookie-parser";
 
@@ -44,6 +47,7 @@ app.use(routerAuth);
 //MIDDLEWARE UNTUK PATH ASING/ UNKNOWN PAGE
 app.use(notFound);
 
-app.listen(5000, () => {
-    console.info("App is running in http://localhost:5000");
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+    console.info("App is running in http://localhost:" + port);
 });
