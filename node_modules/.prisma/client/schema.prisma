@@ -65,10 +65,46 @@ model Project {
   company     String?       @db.VarChar(100)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @default(now()) @updatedAt
+
+  @@map("project")
 }
 
 enum ProjectStatus {
   ON_PROGRESS
   MAINTENANCE
   COMPLETE
+}
+
+model Education {
+  id             Int      @id @default(autoincrement())
+  instutuionName String   @db.VarChar(100)
+  startYear      Int      @db.Int
+  endYear        Int?     @db.Int
+  major          String?  @db.VarChar(100)
+  degree         String?  @db.VarChar(100)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+
+  @@map("education")
+}
+
+model SkillCategory {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  Skill     Skill[]
+
+  @@map("skill_category")
+}
+
+model Skill {
+  id              Int           @id @default(autoincrement())
+  title           String        @db.VarChar(100)
+  skillCategoryId Int           @db.Int
+  category        SkillCategory @relation(fields: [skillCategoryId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+
+  @@map("skill")
 }
