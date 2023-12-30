@@ -2,14 +2,32 @@ import { Prisma } from '../application/prisma.js';
 
 
 // PATH: METHOD GET UNUTK BLOG
-const get = async (req, res) => {
-    const blog = await Prisma.blog.findMany();
+const getAll = async (req, res) => {
+    const blogs = await Prisma.blog.findMany();
 
     res.status(200).json({
         messege: "berhasil mendapat data blog",
+        blogs: blogs
+    });
+}
+
+// GET BY ID
+const get = async (req, res) => {
+    let id = req.params.id;
+    id = parseInt(id); // untuk parse ke integer
+
+    const blog = await Prisma.blog.findUnique({
+        where: {
+            id: id
+        }
+    });
+
+    res.status(200).json({
+        messege: "berhasil mendapat data blog berdasarkan id = " + id,
         blog: blog
     });
 }
+
 
 // PATH : METHOD UNTUK MENYIMPAN DATA blog
 const post = (req, res) => {
@@ -38,6 +56,7 @@ const remove = (req, res) => {
 }
 
 export default {
+    getAll,
     get,
     post,
     patch,
