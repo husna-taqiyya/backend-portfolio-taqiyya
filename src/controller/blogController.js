@@ -60,8 +60,41 @@ const get = async (req, res) => {
 
 
 // PATH : METHOD UNTUK MENYIMPAN DATA blog
-const post = (req, res) => {
-    res.send('<p>Halaman untuk menyimpan data</p>')
+const post = async (req, res) => {
+    try {
+        const blog = req.body;
+
+        if (!blog.title || !blog.content) {
+            return res.status(400).json({
+                messege: "Silahkan isi title dan content"
+            });
+        }
+
+        if (blog.title.length < 3) {
+            return res.status(400).json({
+                messege: "Title minimal 3 karakter"
+            });
+        }
+
+        if (blog.content.length < 3) {
+            return res.status(400).json({
+                messege: "Content minimal 3 karakter"
+            });
+        }
+
+        const newBlog = await Prisma.blog.create({
+            data: blog
+        });
+
+        res.status(200).json({
+            messege: "berhasil menyimpan data blog",
+            data: newBlog
+        });
+    } catch (error) {
+        res.status(500).json({
+            messege: "Server error :" + error.messege
+        })
+    }
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA blog
