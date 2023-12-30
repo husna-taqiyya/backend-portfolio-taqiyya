@@ -1,14 +1,21 @@
 import { Prisma } from '../application/prisma.js';
 
 
-// PATH: METHOD GET UNUTK BLOG
+// PATH: METHOD GET UNTUK BLOG
 const getAll = async (req, res) => {
-    const blogs = await Prisma.blog.findMany();
+    try {
+        // FIND MANY -> ambil smeua blog
+        const blogs = await Prisma.blog.findMany();
 
-    res.status(200).json({
-        messege: "berhasil mendapat data blog",
-        blogs: blogs
-    });
+        res.status(200).json({
+            messege: "berhasil mendapat data blog",
+            blogs: blogs
+        });
+    } catch (error) {
+        res.status(500).json({
+            messege: "Server error :" + error.messege
+        })
+    }
 }
 
 // GET BY ID
@@ -24,9 +31,10 @@ const get = async (req, res) => {
 
     // HANDLE NOT FOUND
     if (blog == null) {
-        res.status(404).json({
+        return res.status(404).json({
             messege: `Blog ${id} tidak ditemukan`
         });
+
     }
 
     res.status(200).json({
