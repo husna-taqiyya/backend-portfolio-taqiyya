@@ -1,15 +1,13 @@
-const get = (req, res) => {
-    // ambil data dari database;
-    const data = {
-        firstname: "john",
-        lastname: "doe",
-        email: "johndoe@gmail.com",
-        age: 18
-    };
+import { Prisma } from '../application/prisma.js';
+
+
+// PATH: METHOD GET UNUTK BLOG
+const get = async (req, res) => {
+    const blog = await Prisma.blog.findMany();
 
     res.status(200).json({
-        messege: "berhasil ambil data blog",
-        data: data
+        messege: "berhasil mendapat data blog",
+        blog: blog
     });
 }
 
