@@ -22,11 +22,20 @@ const get = async (req, res) => {
         }
     });
 
+    // HANDLE NOT FOUND
+    if (blog == null) {
+        res.status(404).json({
+            messege: `Blog ${id} tidak ditemukan`
+        });
+    }
+
     res.status(200).json({
         messege: "berhasil mendapat data blog berdasarkan id = " + id,
         blog: blog
     });
 }
+
+
 
 
 // PATH : METHOD UNTUK MENYIMPAN DATA blog
