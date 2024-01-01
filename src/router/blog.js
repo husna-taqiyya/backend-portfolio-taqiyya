@@ -14,7 +14,7 @@ routerBlog.get('/blogs', blogController.getAll);
 routerBlog.patch('/update_blog_title/:id', blogController.updateTitle)
 
 // save new blog
-routerBlog.get('/blog', blogController.post);
+routerBlog.post('/blog', blogController.post);
 
 
 routerBlog.route('/blog/:id')

@@ -61,13 +61,66 @@ const get = async (req, res) => {
     }
 }
 
-
-
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const post = async (req, res) => {
     try {
-        const blog = req.body;
+        let blog = req.body;
         // START: JOI VALIDATE
+        const schemaBlog = Joi.object({
+            title: Joi.string().trim().min(3).max(255).required().label("Title"),
+            content: Joi.string().trim().min(3).required().label("Content")
+        });
+
+        const validateBlog = schemaBlog.validate(blog, {
+            abortEarly: false
+        }); console.log("validate ===============")
+        console.log(validateBlog);
+
+        if (validateBlog.error) {
+            return res.status(400).json({
+                message: validateBlog.error.message
+            });
+        }
+        blog = validateBlog.value
+
+        // END: JOI VALIDATE
+
+        const newBlog = await Prisma.blog.create({
+            data: blog
+        });
+
+        res.status(200).json({
+            messege: "berhasil menyimpan data ke blog",
+            data: newBlog
+        });
+    } catch (error) {
+        res.status(500).json({
+            messege: "Server error :" + error.messege
+        });
+    }
+}
+
+// PATH : METHOD UNTUK MENYIMPAN DATA BLOG
+const put = async (req, res) => {
+    try {
+        let blog = req.body;
+        let id = req.params.id;
+
+        // START: VALIDATE ID
+        const schema = Joi.number().min(1).positive().required().label("ID");
+        const validation = schema.validate(id);
+
+        if (validation.error) {
+            return restart.status(400).json({
+                message: validation.error.message
+            });
+        }
+
+        id = validation.value;
+        // END: VALIDATE ID
+
+        // START: VALIDATE BLOG
+
         const schemaBlog = Joi.object({
             title: Joi.string().trim().min(3).max(255).required().label("Title"),
             content: Joi.string().trim().min(3).required().label("Content")
@@ -82,48 +135,7 @@ const post = async (req, res) => {
                 message: validateBlog.error.message
             });
         }
-
-        // END: JOI VALIDATE
-
-        const newBlog = await Prisma.blog.create({
-            data: blog
-        });
-
-        res.status(200).json({
-            messege: "berhasil update data keseluruhan blog",
-            data: updateData
-        });
-    } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        });
-    }
-}
-
-
-
-// PATH : METHOD UNTUK MENYIMPAN DATA BLOG
-const put = async (req, res) => {
-    try {
-        const blog = req.body;
-
-        if (!blog.title || !blog.content) {
-            return res.status(400).json({
-                messege: "Silahkan isi title dan content"
-            });
-        }
-
-        if (blog.title.length < 3) {
-            return res.status(400).json({
-                messege: "Title minimal 3 karakter"
-            });
-        }
-
-        if (blog.content.length < 3) {
-            return res.status(400).json({
-                messege: "Content minimal 3 karakter"
-            });
-        }
+        blog = validateBlog.value
 
         const newBlog = await Prisma.blog.create({
             data: blog
@@ -143,27 +155,34 @@ const put = async (req, res) => {
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const updateTitle = async (req, res) => {
     try {
-        const blog = req.body;
+        let title = req.body.title;
         let id = req.params.id;
 
-        if (isNaN(id)) {
-            return res.status(400).json({
-                messege: "ID is invalid  dari method isNaN"
-            });
-        }
-        id = parseInt(id); // untuk parse ke integer
+        // START: VALIDATE ID
+        const schema = Joi.number().positive().required().label("ID");
+        const validation = schema.validate(id);
 
-        if (!blog.title) {
+        if (validation.error) {
             return res.status(400).json({
-                messege: "Silahkan isi title"
+                message: validation.error.message
             });
         }
 
-        if (blog.title.length < 3) {
-            return res.status(400).json({
-                messege: "Title minimal 3 karakter"
+        id = validation.value;
+        // END: VALIDATE ID
+
+        // START: VALIDATE BLOG
+        const schemaTitle = Joi.string().trim().min(3).max(255).required().label("Blog Title")
+        const validateTitle = schemaTitle.validate(title);
+
+        if (validateTitle.error) {
+            return restart.status(400).json({
+                message: validateTitle.error.message
             });
         }
+
+        title = validateTitle.value
+        // END VALIDATE BLOG 
 
         const currentBlog = await Prisma.blog.findUnique({
             where: {
@@ -185,11 +204,13 @@ const updateTitle = async (req, res) => {
         // EKSEKUSI PATCH
         const updateTitle = await Prisma.blog.update({
             where: { id: id },
-            data: blog
+            data: {
+                title: title
+            }
         });
 
         res.status(200).json({
-            messege: "Behasil update title blog",
+            messege: "Berhasil update title blog",
             data: updateTitle
         })
 
@@ -206,12 +227,18 @@ const remove = async (req, res) => {
     try {
         let id = req.params.id;
 
-        if (isNaN(id)) {
-            return res.status(400).json({
-                messege: "ID is invalid  dari method isNaN"
+        // START : VALIDATE ID
+        const schema = Joi.number().min(1).positive().required().label("ID");
+        const validation = schema.validate(id);
+
+        if (validation.error) {
+            return restart.status(400).json({
+                message: validation.error.message
             });
         }
-        id = parseInt(id); // untuk parse ke integer 
+
+        id = validation.value;
+        // END VALIDATE ID
 
         const currentBlog = await Prisma.blog.findUnique({
             where: {
