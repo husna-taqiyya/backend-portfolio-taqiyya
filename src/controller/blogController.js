@@ -4,7 +4,7 @@ import { Prisma } from '../application/prisma.js';
 // PATH: METHOD GET UNTUK BLOG
 const getAll = async (req, res) => {
     try {
-        // FIND MANY -> ambil smeua blog
+        // FIND MANY -> ambil semua blog
         const blogs = await Prisma.blog.findMany();
 
         res.status(200).json({
@@ -59,7 +59,7 @@ const get = async (req, res) => {
 
 
 
-// PATH : METHOD UNTUK MENYIMPAN DATA blog
+// PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const post = async (req, res) => {
     try {
         const blog = req.body;
@@ -97,21 +97,21 @@ const post = async (req, res) => {
     }
 }
 
-// PATH : METHOD UNTUK MENYIMPAN DATA blog
+// PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const patch = (req, res) => {
     res.status(200).json({
         messege: "berhasil mengubah data blog sebagian berdasarkan id"
     });
 }
 
-// PATH : METHOD UNTUK MENYIMPAN DATA blog
+// PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const put = (req, res) => {
     res.status(200).json({
         messege: "Berhasil ubah data blog seluruhnya berdasarkan id"
     });
 }
 
-// PATH : METHOD UNTUK MENYIMPAN DATA blog
+// PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const remove = (req, res) => {
     res.status(200).json({
         messege: "berhasil menghapus data blog"
