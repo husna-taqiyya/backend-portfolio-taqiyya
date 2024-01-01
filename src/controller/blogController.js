@@ -167,10 +167,63 @@ const put = async (req, res) => {
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
-const patch = (req, res) => {
-    res.status(200).json({
-        messege: "berhasil mengubah data blog sebagian berdasarkan id"
-    });
+const updateTitle = async (req, res) => {
+    try {
+        const blog = req.body;
+        let id = req.params.id;
+
+        if (isNaN(id)) {
+            return res.status(400).json({
+                messege: "ID is invalid  dari method isNaN"
+            });
+        }
+        id = parseInt(id); // untuk parse ke integer
+
+        if (!blog.title) {
+            return res.status(400).json({
+                messege: "Silahkan isi title"
+            });
+        }
+
+        if (blog.title.length < 3) {
+            return res.status(400).json({
+                messege: "Title minimal 3 karakter"
+            });
+        }
+
+        const currentBlog = await Prisma.blog.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if (!currentBlog) {
+            // check apakah id tersebut ada di database di table blog
+            // 4040 blog tidak di temukan
+            return res.status(404).json({
+                messege: `Blog dengan id ${id} tidak ditemukan`
+            })
+        }
+
+        // EKSEKUSI PATCH
+        const updateTitle = await Prisma.blog.update({
+            where: { id: id },
+            data: blog
+        });
+
+        res.status(200).json({
+            messege: "Behasil update title blog",
+            data: updateTitle
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            messege: "Server error :" + error.messege
+        });
+    }
 }
 
 
@@ -225,7 +278,7 @@ export default {
     getAll,
     get,
     post,
-    patch,
+    updateTitle,
     put,
     remove
 }
