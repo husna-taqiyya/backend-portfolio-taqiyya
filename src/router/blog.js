@@ -9,14 +9,15 @@ export const routerBlog = express.Router()
 
 //get all blogs
 routerBlog.get('/blogs', blogController.getAll);
-// get blog by id
-routerBlog.get('/blog/:id', blogController.get);
+
+// update title only
+routerBlog.patch('/update_blog_title/:id', blogController.updateTitle)
+
 // save new blog
 routerBlog.get('/blog', blogController.post);
 
 
 routerBlog.route('/blog/:id')
-    .put(blogController.put)
-    .delete(blogController.remove);
-
-routerBlog.patch('/update_blog_title/:id', blogController.updateTitle)
+    .get(blogController.get) // get by id
+    .put(blogController.put) // update by id
+    .delete(blogController.remove); // remove by id
