@@ -1,9 +1,10 @@
 import Joi from 'joi';
 import { Prisma } from '../application/prisma.js';
+import { Validate } from '../application/validate.js';
 
 
 // PATH: METHOD GET UNTUK BLOG
-const getAll = async (req, res) => {
+const getAll = async (req, res, next) => {
     try {
         // FIND MANY -> ambil semua blog
         const blogs = await Prisma.blog.findMany();
@@ -13,27 +14,17 @@ const getAll = async (req, res) => {
             blogs: blogs
         });
     } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        })
+        next();
     }
 }
 
 // GET BY ID
-const get = async (req, res) => {
+const get = async (req, res, next) => {
     try {
         let id = req.params.id;
 
-        const schema = Joi.number().min(1).positive().required().label("ID");
-        const validation = schema.validate(id);
-
-        if (validation.error) {
-            return restart.status(400).json({
-                message: validation.error.message
-            });
-        }
-
-        id = validation.value;
+        const schema = Joi.number().positive().required().label("ID");
+        id = Validate(schema, id);
 
         const blog = await Prisma.blog.findUnique({
             where: {
@@ -44,25 +35,23 @@ const get = async (req, res) => {
         // HANDLE NOT FOUND
         if (blog == null) {
             return res.status(404).json({
-                messege: `Blog ${id} tidak ditemukan`
+                message: `Blog ${id} tidak ditemukan`
             });
 
         }
 
         res.status(200).json({
             messege: "berhasil mendapat data blog berdasarkan id = " + id,
-            blog: blog
+            data: blog
         });
 
     } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        });
+        next(error);
     }
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
-const post = async (req, res) => {
+const post = async (req, res, next) => {
     try {
         let blog = req.body;
         // START: JOI VALIDATE
@@ -94,14 +83,12 @@ const post = async (req, res) => {
             data: newBlog
         });
     } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        });
+        next();
     }
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
-const put = async (req, res) => {
+const put = async (req, res, next) => {
     try {
         let blog = req.body;
         let id = req.params.id;
@@ -109,6 +96,7 @@ const put = async (req, res) => {
         // START: VALIDATE ID
         const schema = Joi.number().min(1).positive().required().label("ID");
         const validation = schema.validate(id);
+
 
         if (validation.error) {
             return restart.status(400).json({
@@ -146,14 +134,12 @@ const put = async (req, res) => {
             data: newBlog
         });
     } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        })
+        next();
     }
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
-const updateTitle = async (req, res) => {
+const updateTitle = async (req, res, next) => {
     try {
         let title = req.body.title;
         let id = req.params.id;
@@ -215,15 +201,13 @@ const updateTitle = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        });
+        next();
     }
 }
 
 
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
-const remove = async (req, res) => {
+const remove = async (req, res, next) => {
     try {
         let id = req.params.id;
 
@@ -251,7 +235,7 @@ const remove = async (req, res) => {
 
         if (!currentBlog) {
             // check apakah id tersebut ada di database di table blog
-            // 4040 blog tidak di temukan
+            // 404 blog tidak di temukan
             return res.status(404).json({
                 messege: `Blog dengan id ${id} tidak ditemukan`
             })
@@ -269,9 +253,7 @@ const remove = async (req, res) => {
             messege: "Berhasil menghapus data blog"
         });
     } catch (error) {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        })
+        next();
     }
 }
 
