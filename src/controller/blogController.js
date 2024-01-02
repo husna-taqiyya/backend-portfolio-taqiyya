@@ -22,7 +22,6 @@ const getAll = async (req, res, next) => {
 const get = async (req, res, next) => {
     try {
         let id = req.params.id;
-
         const schema = Joi.number().positive().required().label("ID");
         id = Validate(schema, id);
 
@@ -54,23 +53,14 @@ const get = async (req, res, next) => {
 const post = async (req, res, next) => {
     try {
         let blog = req.body;
+
         // START: JOI VALIDATE
         const schemaBlog = Joi.object({
             title: Joi.string().trim().min(3).max(255).required().label("Title"),
             content: Joi.string().trim().min(3).required().label("Content")
         });
 
-        const validateBlog = schemaBlog.validate(blog, {
-            abortEarly: false
-        }); console.log("validate ===============")
-        console.log(validateBlog);
-
-        if (validateBlog.error) {
-            return res.status(400).json({
-                message: validateBlog.error.message
-            });
-        }
-        blog = validateBlog.value
+        blog = Validate(schemaBlog, blog)
 
         // END: JOI VALIDATE
 
@@ -95,17 +85,7 @@ const put = async (req, res, next) => {
 
         // START: VALIDATE ID
         const schema = Joi.number().min(1).positive().required().label("ID");
-        const validation = schema.validate(id);
-
-
-        if (validation.error) {
-            return restart.status(400).json({
-                message: validation.error.message
-            });
-        }
-
-        id = validation.value;
-        // END: VALIDATE ID
+        id = Validate(schema, id);
 
         // START: VALIDATE BLOG
 
@@ -114,16 +94,7 @@ const put = async (req, res, next) => {
             content: Joi.string().trim().min(3).required().label("Content")
         });
 
-        const validateBlog = schemaBlog.validate(blog, {
-            abortEarly: false
-        });
-
-        if (validateBlog.error) {
-            return restart.status(400).json({
-                message: validateBlog.error.message
-            });
-        }
-        blog = validateBlog.value
+        blog = Validate(schemaBlog, blog)
 
         const newBlog = await Prisma.blog.create({
             data: blog
@@ -134,7 +105,7 @@ const put = async (req, res, next) => {
             data: newBlog
         });
     } catch (error) {
-        next();
+        next(error);
     }
 }
 
@@ -146,28 +117,17 @@ const updateTitle = async (req, res, next) => {
 
         // START: VALIDATE ID
         const schema = Joi.number().positive().required().label("ID");
-        const validation = schema.validate(id);
+        id = Validate(schema, id);
 
-        if (validation.error) {
-            return res.status(400).json({
-                message: validation.error.message
-            });
-        }
-
-        id = validation.value;
         // END: VALIDATE ID
 
         // START: VALIDATE BLOG
+
         const schemaTitle = Joi.string().trim().min(3).max(255).required().label("Blog Title")
         const validateTitle = schemaTitle.validate(title);
 
-        if (validateTitle.error) {
-            return restart.status(400).json({
-                message: validateTitle.error.message
-            });
-        }
+        title = Validate(schemaTitle, title)
 
-        title = validateTitle.value
         // END VALIDATE BLOG 
 
         const currentBlog = await Prisma.blog.findUnique({
@@ -212,16 +172,10 @@ const remove = async (req, res, next) => {
         let id = req.params.id;
 
         // START : VALIDATE ID
+
         const schema = Joi.number().min(1).positive().required().label("ID");
-        const validation = schema.validate(id);
+        id = Validate(schema, id);
 
-        if (validation.error) {
-            return restart.status(400).json({
-                message: validation.error.message
-            });
-        }
-
-        id = validation.value;
         // END VALIDATE ID
 
         const currentBlog = await Prisma.blog.findUnique({
@@ -253,7 +207,7 @@ const remove = async (req, res, next) => {
             messege: "Berhasil menghapus data blog"
         });
     } catch (error) {
-        next();
+        next(error);
     }
 }
 
