@@ -11,4 +11,4 @@ routerEducation.route('/education')
 routerEducation.route('/education/:id')
     .put(educationController.put)
     .patch(educationController.patch)
-    .delete(educationController.remove);
+    .delete(educationController.remove); 
