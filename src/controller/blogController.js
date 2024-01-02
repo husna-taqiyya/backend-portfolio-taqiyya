@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { Prisma } from '../application/prisma.js';
 import { Validate } from '../application/validate.js';
+import { isID } from '../validation/mainValidation.js';
 
 
 // PATH: METHOD GET UNTUK BLOG
@@ -22,8 +23,7 @@ const getAll = async (req, res, next) => {
 const get = async (req, res, next) => {
     try {
         let id = req.params.id;
-        const schema = Joi.number().positive().required().label("ID");
-        id = Validate(schema, id);
+        id = Validate(isID, id);
 
         const blog = await Prisma.blog.findUnique({
             where: {
@@ -83,9 +83,7 @@ const put = async (req, res, next) => {
         let blog = req.body;
         let id = req.params.id;
 
-        // START: VALIDATE ID
-        const schema = Joi.number().min(1).positive().required().label("ID");
-        id = Validate(schema, id);
+        id = Validate(isID, id);
 
         // START: VALIDATE BLOG
 
@@ -115,9 +113,7 @@ const updateTitle = async (req, res, next) => {
         let title = req.body.title;
         let id = req.params.id;
 
-        // START: VALIDATE ID
-        const schema = Joi.number().positive().required().label("ID");
-        id = Validate(schema, id);
+        id = Validate(isID, id);
 
         // END: VALIDATE ID
 
@@ -171,10 +167,7 @@ const remove = async (req, res, next) => {
     try {
         let id = req.params.id;
 
-        // START : VALIDATE ID
-
-        const schema = Joi.number().min(1).positive().required().label("ID");
-        id = Validate(schema, id);
+        id = Validate(isID, id);
 
         // END VALIDATE ID
 
