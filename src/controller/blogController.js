@@ -2,6 +2,7 @@ import Joi from 'joi';
 import { Prisma } from '../application/prisma.js';
 import { Validate } from '../application/validate.js';
 import { isID } from '../validation/mainValidation.js';
+import { isBlog, isBlogTitle } from '../validation/blogValidation.js';
 
 
 // PATH: METHOD GET UNTUK BLOG
@@ -54,13 +55,8 @@ const post = async (req, res, next) => {
     try {
         let blog = req.body;
 
-        // START: JOI VALIDATE
-        const schemaBlog = Joi.object({
-            title: Joi.string().trim().min(3).max(255).required().label("Title"),
-            content: Joi.string().trim().min(3).required().label("Content")
-        });
-
-        blog = Validate(schemaBlog, blog)
+        // BLOG VALIDATE
+        blog = Validate(isBlog, blog)
 
         // END: JOI VALIDATE
 
@@ -85,14 +81,8 @@ const put = async (req, res, next) => {
 
         id = Validate(isID, id);
 
-        // START: VALIDATE BLOG
-
-        const schemaBlog = Joi.object({
-            title: Joi.string().trim().min(3).max(255).required().label("Title"),
-            content: Joi.string().trim().min(3).required().label("Content")
-        });
-
-        blog = Validate(schemaBlog, blog)
+        // BLOG VALIDATE
+        blog = Validate(isBlog, blog)
 
         const newBlog = await Prisma.blog.create({
             data: blog
@@ -115,14 +105,7 @@ const updateTitle = async (req, res, next) => {
 
         id = Validate(isID, id);
 
-        // END: VALIDATE ID
-
-        // START: VALIDATE BLOG
-
-        const schemaTitle = Joi.string().trim().min(3).max(255).required().label("Blog Title")
-        const validateTitle = schemaTitle.validate(title);
-
-        title = Validate(schemaTitle, title)
+        title = Validate(isBlogTitle, title)
 
         // END VALIDATE BLOG 
 
