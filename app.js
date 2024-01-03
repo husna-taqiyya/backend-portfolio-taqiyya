@@ -14,6 +14,7 @@ import { routerAuth } from "./src/router/auth.js";
 import { notFound } from "./src/middleware/notfound.js";
 import { logging } from "./src/middleware/logging.js";
 import Joi from 'joi';
+import { ResponseError } from './src/error/responseError.js';
 
 //deskripsi aplikasi express
 const app = express();
@@ -52,6 +53,13 @@ app.use(notFound);
 app.use((error, req, res, next) => {
     if (!error) {
         return next();
+    }
+
+    // RESPONSE ERROR
+    if (error instanceof ResponseError) {
+        return res.status(error.status).json({
+            message: error.message
+        });
     }
 
     // JOI VALIDATION ERROR

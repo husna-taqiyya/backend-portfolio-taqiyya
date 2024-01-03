@@ -15,15 +15,10 @@ const get = async (req, res, next) => {
         });
 
         // HANDLE NOT FOUND
-        if (education == null) {
-            return res.status(404).json({
-                message: `Education ${id} tidak ditemukan`
-            });
-
-        }
+        if (blog == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         res.status(200).json({
-            messege: "berhasil ambil data education",
+            messege: "berhasil mendapat data education berdasarkan id = " + id,
             data: education
         });
 
@@ -50,7 +45,7 @@ const post = async (req, res, next) => {
         });
 
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -65,15 +60,28 @@ const put = async (req, res, next) => {
 
         education = Validate(isEducation, education);
 
-        const newEducation = await Prisma.education.create({
-            data: education
+        const currentEducation = await Prisma.blog.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+
+        const updateData = await Prisma.education.update({
+            where: {
+                id: id
+            },
+            data: updateData
         });
 
         res.status(200).json({
-            messege: "Berhasil ubah data education seluruhnya berdasarkan id",
-            data: newEducation
+            messege: "Berhasil ubah data education seluruhnya",
+            data: updateData
         });
-
     } catch (error) {
         next(error);
     }
@@ -87,7 +95,7 @@ const patch = (req, res, next) => {
         });
 
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -107,16 +115,9 @@ const remove = async (req, res, next) => {
             }
         });
 
-        if (!currentEducation) {
-            // check apakah id tersebut ada di database di table blog
-            // 404 education tidak di temukan
-            return res.status(404).json({
-                messege: `Education dengan id ${id} tidak ditemukan`
-            })
-        }
+        if (!currentBlog) throw new ResponseError(404, `Education dengan id ${id} tidak ditemukan`);
 
         // EKSEKUSI DELETE
-
         await Prisma.education.delete({
             where: {
                 id: id

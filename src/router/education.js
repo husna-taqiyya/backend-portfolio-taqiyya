@@ -4,11 +4,12 @@ import educationController from '../controller/educationController.js';
 export const routerEducation = express.Router()
 
 routerEducation.route('/education')
-    .get(educationController.get)
-    .post(educationController.post);
+    .post(educationController.post)
+    .patch(educationController.patch);
 
 
+// METHOD BY ID
 routerEducation.route('/education/:id')
-    .put(educationController.put)
-    .patch(educationController.patch)
-    .delete(educationController.remove); 
+    .put(educationController.put) // update by id
+    .get(educationController.get) // get by id
+    .delete(educationController.remove); // remove by id
