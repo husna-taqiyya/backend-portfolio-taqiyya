@@ -13,7 +13,7 @@ import { routerProject } from "./src/router/project.js";
 import { routerAuth } from "./src/router/auth.js";
 import { notFound } from "./src/middleware/notfound.js";
 import { logging } from "./src/middleware/logging.js";
-import { JoiError } from './src/application/validate.js';
+import Joi from 'joi';
 
 //deskripsi aplikasi express
 const app = express();
@@ -54,15 +54,17 @@ app.use((error, req, res, next) => {
         return next();
     }
 
-    if (error instanceof JoiError) {
-        res.status(error.status).json({
+    // JOI VALIDATION ERROR
+    if (error instanceof Joi.ValidationError) {
+        return res.status(400).json({
             message: error.message
         }).end();
-    } else {
-        res.status(500).json({
-            messege: "Server error :" + error.messege
-        });
     }
+
+    // SERVER ERROR
+    res.status(500).json({
+        messege: "Server error :" + error.messege
+    }); end();
 
 });
 
