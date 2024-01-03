@@ -66,13 +66,13 @@ app.use((error, req, res, next) => {
     if (error instanceof Joi.ValidationError) {
         return res.status(400).json({
             message: error.message
-        }).end();
+        });
     }
 
     // SERVER ERROR
     res.status(500).json({
         messege: "Server error :" + error.messege
-    }); end();
+    });
 
 });
 

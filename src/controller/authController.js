@@ -1,14 +1,69 @@
+import { Prisma } from "../application/prisma.js";
+import { Validate } from "../application/validate.js"
+import { ResponseError } from "../error/responseError.js";
+import { loginValidation } from "../validation/authValidation.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+
 // PATH: METHOD POST UNTUK LOGIN
-const login = (req, res) => {
+const login = async (req, res, next) => {
+    try {
+        // ambil data body -> email & password
+        let loginData = req.body;
+        loginData = Validate(loginValidation, loginData);
 
-    // CARA UNTUK KIRIM COOKIE KE CLIENT/BROWSER
-    res.cookie("token", "abcdefghijklmnopqrstuvwxyz");
-    res.cookie("username", "husnataqiyya");
-    res.cookie("lokasi", "jakarta");
+        // check apakah user & email valid
+        const user = await Prisma.user.findUnique({
+            where: {
+                email: loginData.email
+            }
+        });
 
-    res.status(200).json({
-        messege: "Anda berhasil login"
-    });
+        if (!user) throw new ResponseError(400, "Email or Password is invalid");
+
+        // check password betul atau salah
+        const clientPassword = loginData.password;
+        const dbPassword = user.password;
+        const checkPassword = await bcrypt.compare(clientPassword, dbPassword);
+        console.log("hasil cek password")
+        console.log(checkPassword)
+
+        if (!checkPassword) throw new ResponseError(400, "Email or Password is invalid");
+
+        // CREATE TOKEN
+        const jwtSecret = "TOKENPORTFOLIOTAQIYYA";
+        const maxAge = 60 * 60; // 1 jam
+        var token = jwt.sign({ email: user.email }, jwtSecret, {
+            expiresIn: maxAge
+        });
+
+        res.cookie("token", token);
+
+        // UPDATE DATA USER, MASUKKAN TOKEN
+        const data = await Prisma.user.findUnique({
+            where: {
+                email: loginData.email
+            },
+            data: {
+                token: token
+            },
+            select: {
+                name: true,
+                email: true
+            }
+        })
+
+        res.status(200).json({
+            messege: "Anda berhasil login",
+            data: data,
+            token: token
+        });
+
+    } catch (error) {
+        next(error);
+    }
+
 }
 
 
