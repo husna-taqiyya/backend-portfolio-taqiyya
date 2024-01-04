@@ -72,20 +72,35 @@ app.use(async (req, res, next) => {
         const jwtSecret = "TOKENTAQIYYA";
         const verifyToken = jwt.verify(token, jwtSecret);
 
-        if (!verifyToken) {
-            // clear cookie supaya gak dipake lagi 
-            res.clearCookie('token');
+        // PERBARUI TOKEN
+        const maxAge = 60 * 60; // 1 jam
+        var newToken = jwt.sign({ email: user.email }, jwtSecret, {
+            expiresIn: maxAge
+        });
 
-            return res.status(401).json({
-                message: "Unauthorized, you must login first"
-            });
-        }
+        // PERABARUI TOKEN KE DB USER
+        await Prisma.user.update({
+            where: {
+                email: user.email
+            },
+            data: {
+                token: newToken
+            }
+        });
 
+        // KIRIM COOKIE 
+        res.cookie("token", newToken);
+
+        // if (!verifyToken) {
+        //     // clear cookie supaya gak dipake lagi 
+        //     res.clearCookie('token');
+
+        //     return res.status(401).json({
+        //         message: "Unauthorized, you must login first"
+        //     });
+        // }
 
         // kalo OK next
-
-        // kalo TIDAK OKE maka return 401 / 
-
         next();
     } catch (error) {
         return res.status(401).json({
