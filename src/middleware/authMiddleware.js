@@ -1,3 +1,7 @@
+// LOAD ENV
+import dotenv from 'dotenv'
+dotenv.config();
+
 import jwt from 'jsonwebtoken';
 import { Prisma } from '../application/prisma.js';
 

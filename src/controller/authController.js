@@ -1,3 +1,7 @@
+// LOAD ENV 
+import dotenv from 'dotenv'
+dotenv.config();
+
 import { Prisma } from "../application/prisma.js";
 import { Validate } from "../application/validate.js"
 import { ResponseError } from "../error/responseError.js";
