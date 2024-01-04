@@ -39,13 +39,16 @@ export const authMiddleware = async (req, res, next) => {
         // ini kalau user ada
         // check token apakah masih verify menggunakan jwt
         const jwtSecret = process.env.JWT_SECRET;
-        const verifyToken = jwt.verify(token, jwtSecret);
+        jwt.verify(token, jwtSecret);
 
         // PERBARUI TOKEN
         const maxAge = 60 * 60; // 1 jam
         var newToken = jwt.sign({ email: user.email }, jwtSecret, {
             expiresIn: maxAge
         });
+
+        // MASUKKAN DATA USER KE REQUSET
+        req.user = user;
 
         // PERABARUI TOKEN KE DB USER
         await Prisma.user.update({
