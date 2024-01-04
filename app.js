@@ -17,6 +17,8 @@ import Joi from 'joi';
 import { ResponseError } from './src/error/responseError.js';
 import { errorMiddleware } from './src/middleware/errorMiddleware.js';
 import { routerPublic } from './public.js';
+import jwt from 'jsonwebtoken';
+import { Prisma } from './src/application/prisma.js';
 
 //deskripsi aplikasi express
 const app = express();
@@ -34,29 +36,63 @@ app.use(logging);
 app.use(routerPublic);
 
 // MIDDLEWARE TO CHECK AUTHENTICATION
-app.use(((req, res, next) => {
+app.use(async (req, res, next) => {
     console.log("enter route blog middleware ===========")
-    // check cookie token;
-    const token = req.cookies.token;
-    if (!token) {
+    try {
+        // check cookie token;
+        const token = req.cookies.token;
+        console.log("token ============")
+        // jika token tidak ada, maka return 401
+        if (!token) throw new Error();
+        console.log("token2 ============")
+
+        // check siapa pemilik token
+        const user = await Prisma.user.findFirst({
+            where: {
+                token: token
+            },
+            select: {
+                name: true,
+                email: true,
+                token: true
+            }
+        });
+
+        console.log("user")
+
+        if (!user) {
+            // clear cookie agar tdk dipaki lagi
+            res.clearCookie("token");
+
+            // jika token tidak ada, maka return 401
+            if (!user) throw new Error();
+        }
+        // ini kalau user ada
+        // check token apakah masih verify menggunakan jwt
+        const jwtSecret = "TOKENTAQIYYA";
+        const verifyToken = jwt.verify(token, jwtSecret);
+
+        if (!verifyToken) {
+            // clear cookie supaya gak dipake lagi 
+            res.clearCookie('token');
+
+            return res.status(401).json({
+                message: "Unauthorized, you must login first"
+            });
+        }
+
+
+        // kalo OK next
+
+        // kalo TIDAK OKE maka return 401 / 
+
+        next();
+    } catch (error) {
         return res.status(401).json({
-            message: "Unauthorized, you must login first!"
+            message: "Unauthorized, you must login first"
         });
     }
-    console.log(token);
-
-
-    // check siapa pemilik token
-
-    // check token apakah masih verify
-
-    // kalo OK next
-
-    // kalo TIDAK OKE maka return 401 / 
-
-    next();
-}));
-
+});
 // ROUTER PROFILE
 app.use(routerProfile);
 

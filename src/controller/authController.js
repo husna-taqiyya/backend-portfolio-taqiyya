@@ -33,7 +33,8 @@ const login = async (req, res, next) => {
 
         // CREATE TOKEN
         const jwtSecret = "TOKENTAQIYYA";
-        const maxAge = 60 * 60; // 1 jam
+        // const maxAge = 60 * 60; // 1 jam
+        const maxAge = 10; // 1 jam
         var token = jwt.sign({ email: user.email }, jwtSecret, {
             expiresIn: maxAge
         });
