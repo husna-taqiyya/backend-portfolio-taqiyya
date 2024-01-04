@@ -23,6 +23,6 @@ export const errorMiddleware = (error, req, res, next) => {
     // SERVER ERROR
     res.status(500).json({
         messege: "Server error :" + error.messege
-    });
+    }).end();
 }
 

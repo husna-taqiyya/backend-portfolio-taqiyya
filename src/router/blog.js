@@ -3,6 +3,7 @@ import blogController from '../controller/blogController.js';
 
 export const routerBlog = express.Router()
 
+// SEMUA ROUTE PATH BUTUH CHECK AUTHENTICATION
 
 
 // update title only

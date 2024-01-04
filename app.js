@@ -33,6 +33,30 @@ app.use(logging);
 // PUBLIC API / TANPA LOGIN
 app.use(routerPublic);
 
+// MIDDLEWARE TO CHECK AUTHENTICATION
+app.use(((req, res, next) => {
+    console.log("enter route blog middleware ===========")
+    // check cookie token;
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({
+            message: "Unauthorized, you must login first!"
+        });
+    }
+    console.log(token);
+
+
+    // check siapa pemilik token
+
+    // check token apakah masih verify
+
+    // kalo OK next
+
+    // kalo TIDAK OKE maka return 401 / 
+
+    next();
+}));
+
 // ROUTER PROFILE
 app.use(routerProfile);
 
