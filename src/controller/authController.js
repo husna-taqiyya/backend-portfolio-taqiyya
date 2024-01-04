@@ -32,7 +32,7 @@ const login = async (req, res, next) => {
         if (!checkPassword) throw new ResponseError(400, "Email or Password is invalid");
 
         // CREATE TOKEN
-        const jwtSecret = "TOKENTAQIYYA";
+        const jwtSecret = process.env.JWT_SECRET;
         const maxAge = 60 * 60; // 1 jam
         var token = jwt.sign({ email: user.email }, jwtSecret, {
             expiresIn: maxAge
