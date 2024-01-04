@@ -15,6 +15,8 @@ import { notFound } from "./src/middleware/notfound.js";
 import { logging } from "./src/middleware/logging.js";
 import Joi from 'joi';
 import { ResponseError } from './src/error/responseError.js';
+import { errorMiddleware } from './src/middleware/errorMiddleware.js';
+import { routerPublic } from './public.js';
 
 //deskripsi aplikasi express
 const app = express();
@@ -27,6 +29,9 @@ app.use(cookieParser());
 
 //belajar middleware => logging
 app.use(logging);
+
+// PUBLIC API / TANPA LOGIN
+app.use(routerPublic);
 
 // ROUTER PROFILE
 app.use(routerProfile);
@@ -50,31 +55,7 @@ app.use(routerAuth);
 app.use(notFound);
 
 // MIDDLEWARE ERROR
-app.use((error, req, res, next) => {
-    if (!error) {
-        return next();
-    }
-
-    // RESPONSE ERROR
-    if (error instanceof ResponseError) {
-        return res.status(error.status).json({
-            message: error.message
-        });
-    }
-
-    // JOI VALIDATION ERROR
-    if (error instanceof Joi.ValidationError) {
-        return res.status(400).json({
-            message: error.message
-        });
-    }
-
-    // SERVER ERROR
-    res.status(500).json({
-        messege: "Server error :" + error.messege
-    });
-
-});
+app.use(errorMiddleware);
 
 
 const port = process.env.PORT || 5000;
