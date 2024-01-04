@@ -42,7 +42,7 @@ const login = async (req, res, next) => {
         res.cookie("token", token);
 
         // UPDATE DATA USER, MASUKKAN TOKEN
-        const data = await Prisma.user.findUnique({
+        const data = await Prisma.user.update({
             where: {
                 email: loginData.email
             },
