@@ -8,6 +8,7 @@ import { ResponseError } from "../error/responseError.js";
 import { loginValidation } from "../validation/authValidation.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import authService from '../service/authService.js';
 
 
 // PATH: METHOD POST UNTUK LOGIN
@@ -35,29 +36,10 @@ const login = async (req, res, next) => {
 
         if (!checkPassword) throw new ResponseError(400, "Email or Password is invalid");
 
-        // CREATE TOKEN
-        const jwtSecret = process.env.JWT_SECRET;
-        const maxAge = 60 * 60; // 1 jam
-        var token = jwt.sign({ email: user.email }, jwtSecret, {
-            expiresIn: maxAge
-        });
+        const email = user.email
+        const token = authService.createToken(res, email);
 
-        // KIRIM COOKIE 
-        res.cookie("token", token);
-
-        // UPDATE DATA USER, MASUKKAN TOKEN
-        const data = await Prisma.user.update({
-            where: {
-                email: loginData.email
-            },
-            data: {
-                token: token
-            },
-            select: {
-                name: true,
-                email: true
-            }
-        })
+        const data = await authService.updateUserToken(email, token);
 
         res.status(200).json({
             messege: "Anda berhasil login",
