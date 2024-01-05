@@ -1,6 +1,6 @@
 import express from "express";
-import blogController from "./src/controller/blogController.js";
-import authController from "./src/controller/authController.js";
+import blogController from "../controller/blogController.js";
+import authController from "../controller/authController.js";
 
 export const routerPublic = express.Router();
 // untuk login
