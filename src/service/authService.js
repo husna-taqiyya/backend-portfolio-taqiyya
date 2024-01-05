@@ -9,7 +9,8 @@ import { Prisma } from '../application/prisma.js';
 const createToken = (res, email) => {
     // return token
     const jwtSecret = process.env.JWT_SECRET;
-    const maxAge = 60 * 60; // 1 jam
+    const maxAge = process.env.SESSION_AGE;
+
     var token = jwt.sign({ email: email }, jwtSecret, {
         expiresIn: maxAge
     });
