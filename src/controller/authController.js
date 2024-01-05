@@ -7,7 +7,6 @@ import { Validate } from "../application/validate.js"
 import { ResponseError } from "../error/responseError.js";
 import { loginValidation } from "../validation/authValidation.js";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import authService from '../service/authService.js';
 
 
@@ -54,14 +53,38 @@ const login = async (req, res, next) => {
 }
 
 
-const logout = (req, res) => {
-    res.clearCookie('lokasi');
-    res.clearCookie('username');
-    res.clearCookie('token');
+const logout = async (req, res, next) => {
+    try {
+        // UPDATE DATA USER
+        const user = req.user;
+        const email = user.email;
+        await Prisma.user.update({
+            where: {
+                email: user.email
+            },
+            data: {
+                token: null
+            },
+            select: {
+                email: true
+            }
+        });
 
-    res.status(200).json({
-        messege: "Semua data di cookie berhasil di hapus"
-    });
+
+        // BUAT TOKEN UMUR 1 DETIK
+        authService.createToken(res, email, '1s');
+
+        // RESET COOKIE
+        res.clearCookie('token');
+
+        // SEND DATA SUCCES
+        res.status(200).json({
+            message: "Success"
+        });
+
+    } catch (error) {
+        next(error);
+    }
 }
 
 export default {

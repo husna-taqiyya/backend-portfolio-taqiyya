@@ -13,11 +13,9 @@ import { routerProject } from "./src/router/project.js";
 import { routerAuth } from "./src/router/auth.js";
 import { notFound } from "./src/middleware/notfound.js";
 import { logging } from "./src/middleware/logging.js";
-import Joi from 'joi';
-import { ResponseError } from './src/error/responseError.js';
 import { errorMiddleware } from './src/middleware/errorMiddleware.js';
-import { routerPublic } from './public.js';
 import { authMiddleware } from './src/middleware/authMiddleware.js';
+import { routerPublic } from './src/router/public.js';
 
 //deskripsi aplikasi express
 const app = express();
