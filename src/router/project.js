@@ -4,7 +4,7 @@ import projectController from '../controller/projectController.js';
 export const routerProject = express.Router()
 
 // create
-routerProject.get('/project', projectController.get);
+routerProject.post('/project', projectController.post);
 
 routerProject.route('/project/:id')
     .put(projectController.put)

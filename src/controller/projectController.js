@@ -1,5 +1,8 @@
 import { Prisma } from "../application/prisma.js";
-import { ResponseError } from "../error/responseError";
+import { Validate } from "../application/validate.js";
+import { ResponseError } from "../error/responseError.js";
+import { isID } from "../validation/mainValidation.js";
+import { isProject } from "../validation/projectValidation.js";
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
 const getAll = async (req, res, next) => {
@@ -7,14 +10,15 @@ const getAll = async (req, res, next) => {
         const projects = await Prisma.project.findMany();
 
         res.status(200).json({
-            messege: "berhasil mendapat data blog",
-            blogs: projects
+            messege: "berhasil mendapat data project",
+            data: projects
         });
     } catch (error) {
-        next();
+        next(error);
     }
 }
 
+// PROJECT BY ID
 const get = async (req, res, next) => {
     try {
         let id = req.params.id;
@@ -30,7 +34,7 @@ const get = async (req, res, next) => {
 
         res.status(200).json({
             messege: "berhasil mendapat data project berdasarkan id = " + id,
-            project
+            data: project
         });
     } catch (error) {
         next(error);
@@ -38,13 +42,22 @@ const get = async (req, res, next) => {
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
-const post = (req, res) => {
+const post = async (req, res, next) => {
     try {
+        let project = req.body;
+
+        //validate
+        project = Validate(isProject, project)
+
+        // project
+        const newProject = await Prisma.project.create({
+            data: project
+        })
+
         res.status(200).json({
-            messege: "berhasil menyimpan data project sebagian berdasarkan id"
+            messege: "berhasil menyimpan data project sebagian berdasarkan id",
+            data: newProject
         });
-
-
 
     } catch (error) {
         next(error);
@@ -52,21 +65,38 @@ const post = (req, res) => {
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
-const patch = (req, res) => {
+const put = async (req, res, next) => {
     try {
-        res.status(200).json({
-            messege: "berhasil mengubah data project sebagian berdasarkan id"
-        });
-    } catch (error) {
-        next();
-    }
-}
+        let project = req.body;
+        let id = req.params.id;
 
-// PATH : METHOD UNTUK MENYIMPAN DATA project
-const put = (req, res) => {
-    try {
+        id = Validate(isID, id);
+
+        // BLOG VALIDATE
+        project = Validate(isProject, project);
+
+        const currentProject = await Prisma.project.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+
+        const updateData = await Prisma.project.update({
+            where: {
+                id: id
+            },
+            data: project
+        });
+
+
         res.status(200).json({
-            messege: "Berhasil ubah data project seluruhnya berdasarkan id"
+            messege: "Berhasil ubah data project seluruhnya berdasarkan id",
+            data: updateData
         });
     } catch (error) {
         next();
@@ -88,7 +118,6 @@ export default {
     getAll,
     get,
     post,
-    patch,
     put,
     remove
 }
