@@ -30,12 +30,12 @@ const login = async (req, res, next) => {
         const clientPassword = loginData.password;
         const dbPassword = user.password;
         const checkPassword = await bcrypt.compare(clientPassword, dbPassword);
-        console.log("hasil cek password")
-        console.log(checkPassword)
 
         if (!checkPassword) throw new ResponseError(400, "Email or Password is invalid");
 
         const email = user.email
+        console.log("hasil cek password")
+        console.log(checkPassword)
         const token = authService.createToken(res, email);
 
         const data = await authService.updateUserToken(email, token);

@@ -1,4 +1,6 @@
 import { Prisma } from '../application/prisma.js';
+import { Validate } from '../application/validate.js';
+import { isProfile } from '../validation/profileValidation.js';
 
 
 // PATH: METHOD GET UNTUK MENGAMBIL DATA PROFILE
@@ -7,16 +9,13 @@ const get = async (req, res, next) => {
         // CEK KE DATABASE
         let profile = await Prisma.profile.findFirst();
 
-        console.log("profile ===============");
-        console.log(profile);
-
         // jika kosong => kirim data dummy
         if (!profile) {
             // buat data dummy disini
             profile = {
                 email: "example@gamil.com",
-                firstName: "-",
-                lastName: "-",
+                firstname: "-",
+                lastname: "-",
                 dob: "1900-10-10",
                 addres: "-"
             };
@@ -34,10 +33,42 @@ const get = async (req, res, next) => {
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA PROFILE
-const put = (req, res) => {
-    res.status(200).json({
-        messege: "Berhasil ubah data profile seluruhnya berdasarkan id"
-    });
+const put = async (req, res, next) => {
+    try {
+        // GET DATA PROFILE DARI DB, FIND FIRST
+        const profile = await Prisma.profile.findFirst();
+
+        // collect data & validate
+        let data = req.body;
+        // validasi
+        data = Validate(isProfile, data)
+
+        let dataProfile = {};
+        if (profile == null) {
+            // JIKA NULL, MAKA BUAT DATA BARU - CREATE
+            dataProfile = await Prisma.profile.create({
+                data: data
+            });
+
+        } else {
+            // JIKA ADA ISINYA, UPDATE DATA TERSEBUT - UPDATE
+            dataProfile = await Prisma.profile.update({
+                where: {
+                    email: profile.email
+                },
+                data: data
+            });
+        }
+
+        res.status(200).json({
+            messege: "Berhasil ubah data profile seluruhnya berdasarkan id",
+            data: dataProfile
+        });
+
+    } catch (error) {
+        next(error);
+    }
+
 }
 
 export default {

@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import { Prisma } from '../application/prisma.js';
 
 
-const createToken = (res, email) => {
+const createToken = (res, email, age) => {
     // return token
     const jwtSecret = process.env.JWT_SECRET;
     const maxAge = age ? age : process.env.SESSION_AGE;
