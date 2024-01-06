@@ -15,7 +15,7 @@ routerPublic.get('/blogs', blogController.getAll);
 routerPublic.get('/blog/:id', blogController.get);
 
 // EDUCATION
-routerPublic.get('/educations', educationController.getAll); // get by id
+// routerPublic.get('/educations', educationController.getAll); // get by id
 routerPublic.get('/education/:id', educationController.get);
 
 // PROFILE
