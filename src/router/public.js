@@ -3,6 +3,7 @@ import blogController from "../controller/blogController.js";
 import authController from "../controller/authController.js";
 import profileController from "../controller/profileController.js";
 import educationController from "../controller/educationController.js";
+import projectController from "../controller/projectController.js";
 
 export const routerPublic = express.Router();
 // untuk login
@@ -22,5 +23,7 @@ routerPublic.get('/education/:id', educationController.get);
 routerPublic.get('/profile', profileController.get);
 
 // PROJECT
+routerPublic.get('/project', projectController.getAll);
+routerPublic.get('/project/:id', projectController.get);
 
 // SKILL

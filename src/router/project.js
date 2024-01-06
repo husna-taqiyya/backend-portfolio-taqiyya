@@ -3,11 +3,9 @@ import projectController from '../controller/projectController.js';
 
 export const routerProject = express.Router()
 
-routerProject.route('/project')
-    .get(projectController.get)
-    .post(projectController.post);
+// create
+routerProject.get('/project', projectController.get);
 
 routerProject.route('/project/:id')
     .put(projectController.put)
-    .patch(projectController.patch)
     .delete(projectController.remove);
