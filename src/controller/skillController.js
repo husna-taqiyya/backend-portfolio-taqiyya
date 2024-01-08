@@ -97,14 +97,15 @@ const put = async (req, res, next) => {
                 id: id
             },
             select: {
-                id: true
+                id: true,
+                skillCategoryId: true
             }
         });
 
         // handle not found
         if (!currentSkill) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
 
-        // handle category
+        // handle category dahulu
         const category_id = await skillService.find_or_create_skill_category(skill.category);
 
 
@@ -120,10 +121,16 @@ const put = async (req, res, next) => {
             data: update_data
         });
 
+        // id category sebelumnya
+        const previous_skill_id = currentSkill.skillCategoryId;
+        await skillService.remove_category(previous_skill_id);
+
+
         res.status(200).json({
-            messege: "berhasil menyimpan data skill",
+            messege: "berhasil mengupdate data skill",
             data: updateSkill
         });
+
     } catch (error) {
         next(error);
     }
