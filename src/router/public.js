@@ -28,5 +28,5 @@ routerPublic.get('/projects', projectController.getAll);
 routerPublic.get('/project/:id', projectController.get);
 
 // SKILL
-// routerPublic.get('/skills', skillController.getAll); // get All
-routerPublic.get('/skill', skillController.get); // get 
+routerPublic.get('/skills', skillController.getAll); // get All
+routerPublic.get('/skill/:id', skillController.get); // get 
