@@ -32,7 +32,8 @@ const post = async (req, res, next) => {
         data = Validate(isSkill, data);
 
         // AMBIL ID CATEGORY -> FIND OR CREATE
-        const id_category = await find_or_create_skill_category(data.category);
+        // const id_category = await find_or_create_skill_category(data.category);
+        const id_category = await skillService.find_or_create_skill_category(data.category);
 
         // CREATE SKILL
         // buat data skill yang akan disimpan
@@ -55,31 +56,31 @@ const post = async (req, res, next) => {
     }
 }
 
-const find_or_create_skill_category = async (title) => {
-    // JIKA TIDAK ADA, MAKA BUAT CATEGORY
-    // JIKA ADA, MAKA LANGSUNG RETURN ID
+// const find_or_create_skill_category = async (title) => {
+//     // JIKA TIDAK ADA, MAKA BUAT CATEGORY
+//     // JIKA ADA, MAKA LANGSUNG RETURN ID
 
-    // find category
-    const category = await Prisma.skillCategory.findFirst({
-        where: {
-            title: title
-        }
-    });
+//     // find category
+//     const category = await Prisma.skillCategory.findFirst({
+//         where: {
+//             title: title
+//         }
+//     });
 
-    // jika ada langsung return id
-    if (category) return category.id;
+//     // jika ada langsung return id
+//     if (category) return category.id;
 
-    // or create category
-    const newCategory = await Prisma.skillCategory.create({
-        data: {
-            title: title
-        }
-    });
+//     // or create category
+//     const newCategory = await Prisma.skillCategory.create({
+//         data: {
+//             title: title
+//         }
+//     });
 
-    // return id yang baru
-    return newCategory.id;
+//     // return id yang baru
+//     return newCategory.id;
 
-}
+// }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA skill
 const patch = (req, res) => {
