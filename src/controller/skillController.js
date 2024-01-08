@@ -121,6 +121,7 @@ const put = async (req, res, next) => {
             data: update_data
         });
 
+        // remove category
         // id category sebelumnya
         const previous_skill_id = currentSkill.skillCategoryId;
         await skillService.remove_category(previous_skill_id);
@@ -156,6 +157,11 @@ const remove = async (req, res, next) => {
 
         if (!currentSkill) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
 
+        // remove category
+        // id category sebelumnya
+        const previous_skill_id = currentSkill.skillCategoryId;
+        await skillService.remove_category(previous_skill_id);
+
         // EKSEKUSI DELETE
         await Prisma.skill.delete({
             where: {
@@ -164,7 +170,7 @@ const remove = async (req, res, next) => {
         });
 
         res.status(200).json({
-            messege: "Berhasil menghapus data skill"
+            messege: "Success"
         });
     } catch (error) {
         next(error);
