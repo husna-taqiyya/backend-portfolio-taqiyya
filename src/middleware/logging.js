@@ -13,7 +13,7 @@ export const logging = (req, res, next) => {
     // console.info(log);
 
     // save to database
-    console.log('==============')
-    console.log('waiting to save log to database')
+    // console.log('==============')
+    // console.log('waiting to save log to database')
     next();
 };

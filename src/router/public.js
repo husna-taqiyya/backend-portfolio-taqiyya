@@ -4,6 +4,7 @@ import authController from "../controller/authController.js";
 import profileController from "../controller/profileController.js";
 import educationController from "../controller/educationController.js";
 import projectController from "../controller/projectController.js";
+import skillController from "../controller/skillController.js";
 
 export const routerPublic = express.Router();
 // untuk login
@@ -27,3 +28,5 @@ routerPublic.get('/projects', projectController.getAll);
 routerPublic.get('/project/:id', projectController.get);
 
 // SKILL
+// routerPublic.get('/skills', skillController.getAll); // get All
+routerPublic.get('/skill', skillController.get); // get 

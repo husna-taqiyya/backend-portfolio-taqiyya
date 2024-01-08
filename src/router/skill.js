@@ -3,11 +3,8 @@ import skillController from '../controller/skillController.js';
 
 export const routerSkill = express.Router()
 
-routerSkill.route('/skill')
-    .get(skillController.get)
-    .post(skillController.post);
+routerSkill.post('/skill', skillController.post); // create
 
 routerSkill.route('/skill/:id')
-    .put(skillController.put)
-    .patch(skillController.patch)
-    .delete(skillController.remove); 
+    .put(skillController.put) // update
+    .delete(skillController.remove); // remove
