@@ -38,7 +38,7 @@ const get = async (req, res, next) => {
         res.status(200).json({
             messege: "berhasil mendapat data blog berdasarkan id = " + id,
             data: blog
-        });
+        }); ''
 
     } catch (error) {
         next(error);

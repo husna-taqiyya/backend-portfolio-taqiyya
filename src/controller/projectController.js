@@ -104,13 +104,37 @@ const put = async (req, res, next) => {
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
-const remove = (req, res) => {
+const remove = async (req, res, next) => {
     try {
+        let id = req.params.id;
+
+        id = Validate(isID, id);
+
+        // END VALIDATE ID
+
+        const currentProject = await Prisma.project.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+
+        // EKSEKUSI DELETE
+        await Prisma.project.delete({
+            where: {
+                id: id
+            }
+        });
+
         res.status(200).json({
-            messege: "berhasil menghapus data project"
+            messege: "Berhasil menghapus data project"
         });
     } catch (error) {
-        next();
+        next(error);
     }
 }
 
