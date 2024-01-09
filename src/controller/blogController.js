@@ -13,7 +13,7 @@ const getAll = async (req, res, next) => {
 
         res.status(200).json({
             messege: "berhasil mendapat data blog",
-            blogs: blogs
+            blogs
         });
     } catch (error) {
         next();
@@ -27,18 +27,16 @@ const get = async (req, res, next) => {
         id = Validate(isID, id);
 
         const blog = await Prisma.blog.findUnique({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
         // HANDLE NOT FOUND
-        if (blog == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+        if (data == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         res.status(200).json({
             messege: "berhasil mendapat data blog berdasarkan id = " + id,
-            data: blog
-        }); ''
+            data
+        });
 
     } catch (error) {
         next(error);
@@ -64,7 +62,7 @@ const post = async (req, res, next) => {
             data: newBlog
         });
     } catch (error) {
-        next();
+        next(error);
     }
 }
 
@@ -80,20 +78,14 @@ const put = async (req, res, next) => {
         blog = Validate(isBlog, blog)
 
         const currentBlog = await Prisma.blog.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         const updateData = await Prisma.blog.update({
-            where: {
-                id: id
-            },
+            where: { id },
             data: updateData
         });
 
@@ -119,22 +111,16 @@ const updateTitle = async (req, res, next) => {
         // END VALIDATE BLOG 
 
         const currentBlog = await Prisma.blog.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         // EKSEKUSI PATCH
         const updateTitle = await Prisma.blog.update({
-            where: { id: id },
-            data: {
-                title: title
-            }
+            where: { id },
+            data: { title }
         });
 
         res.status(200).json({
@@ -158,21 +144,15 @@ const remove = async (req, res, next) => {
         // END VALIDATE ID
 
         const currentBlog = await Prisma.blog.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         // EKSEKUSI DELETE
         await Prisma.blog.delete({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
         res.status(200).json({

@@ -16,9 +16,7 @@ export const authMiddleware = async (req, res, next) => {
 
         // check siapa pemilik token
         const user = await Prisma.user.findFirst({
-            where: {
-                token: token
-            },
+            where: { token },
             select: {
                 name: true,
                 email: true,

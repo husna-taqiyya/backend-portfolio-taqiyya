@@ -1,7 +1,8 @@
 import { Prisma } from '../application/prisma.js';
 import { Validate } from "../application/validate.js";
-import { isEducation } from "../validation/educationValidation.js";
 import { isID } from "../validation/mainValidation.js";
+import { isEducation } from "../validation/educationValidation.js";
+import { ResponseError } from '../error/responseError.js';
 
 const get = async (req, res, next) => {
     try {
@@ -9,9 +10,7 @@ const get = async (req, res, next) => {
         id = Validate(isID, id);
 
         const education = await Prisma.education.findUnique({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
         // HANDLE NOT FOUND
@@ -61,26 +60,20 @@ const put = async (req, res, next) => {
         education = Validate(isEducation, education);
 
         const currentEducation = await Prisma.blog.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
-        const updateData = await Prisma.education.update({
-            where: {
-                id: id
-            },
-            data: updateData
+        const data = await Prisma.education.update({
+            where: { id },
+            data
         });
 
         res.status(200).json({
             messege: "Berhasil ubah data education seluruhnya",
-            data: updateData
+            data
         });
     } catch (error) {
         next(error);
@@ -107,21 +100,15 @@ const remove = async (req, res, next) => {
         id = Validate(isID, id);
 
         const currentEducation = await Prisma.education.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
-        if (!currentBlog) throw new ResponseError(404, `Education dengan id ${id} tidak ditemukan`);
+        if (!currentEducation) throw new ResponseError(404, `Education dengan id ${id} tidak ditemukan`);
 
         // EKSEKUSI DELETE
         await Prisma.education.delete({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
         res.status(200).json({

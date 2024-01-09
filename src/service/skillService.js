@@ -6,9 +6,7 @@ const find_or_create_skill_category = async (title) => {
 
     // find category
     const category = await Prisma.skillCategory.findFirst({
-        where: {
-            title: title
-        }
+        where: { title }
     });
 
     // jika ada langsung return id
@@ -16,9 +14,7 @@ const find_or_create_skill_category = async (title) => {
 
     // or create category
     const newCategory = await Prisma.skillCategory.create({
-        data: {
-            title: title
-        }
+        data: { title }
     });
 
     // return id yang baru
@@ -29,9 +25,7 @@ const find_or_create_skill_category = async (title) => {
 const remove_category = async (previous_skill_id) => {
     // hapus category yang tidak memiliki relasi
     const category = await Prisma.skillCategory.findUnique({
-        where: {
-            id: previous_skill_id
-        },
+        where: { id: previous_skill_id },
         include: {
             _count: {
                 select: {
@@ -45,9 +39,7 @@ const remove_category = async (previous_skill_id) => {
     if (category._count.Skill == 0) {
         // remove
         await Prisma.skillCategory.delete({
-            where: {
-                id: previous_skill_id
-            }
+            where: { id: previous_skill_id }
         })
     }
 }

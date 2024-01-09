@@ -56,7 +56,7 @@ const put = async (req, res, next) => {
                 where: {
                     email: profile.email
                 },
-                data: data
+                data
             });
         }
 

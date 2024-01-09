@@ -25,16 +25,14 @@ const get = async (req, res, next) => {
         id = Validate(isID, id);
 
         const project = await Prisma.project.findUnique({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
-        if (project == null) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+        if (data == null) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
 
         res.status(200).json({
             messege: "berhasil mendapat data project berdasarkan id = " + id,
-            data: project
+            data
         });
     } catch (error) {
         next(error);
@@ -76,20 +74,14 @@ const put = async (req, res, next) => {
         project = Validate(isProject, project);
 
         const currentProject = await Prisma.project.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
 
         const updateData = await Prisma.project.update({
-            where: {
-                id: id
-            },
+            where: { id },
             data: project
         });
 
@@ -113,21 +105,15 @@ const remove = async (req, res, next) => {
         // END VALIDATE ID
 
         const currentProject = await Prisma.project.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
 
         // EKSEKUSI DELETE
         await Prisma.project.delete({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
         res.status(200).json({

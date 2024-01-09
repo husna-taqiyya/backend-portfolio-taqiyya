@@ -10,10 +10,5 @@ export const logging = (req, res, next) => {
         body: req.body,
         hostname: req.hostname
     }
-    // console.info(log);
-
-    // save to database
-    // console.log('==============')
-    // console.log('waiting to save log to database')
     next();
 };

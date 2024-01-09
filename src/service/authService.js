@@ -27,12 +27,8 @@ const updateUserToken = async (email, token) => {
     // return data user
 
     const user = await Prisma.user.update({
-        where: {
-            email: email
-        },
-        data: {
-            token: token
-        },
+        where: { email },
+        data: { token },
         select: {
             name: true,
             email: true

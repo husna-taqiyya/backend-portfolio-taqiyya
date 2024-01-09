@@ -16,7 +16,7 @@ const getAll = async (req, res) => {
 
     res.status(200).json({
         messege: "berhasil ambil data skill",
-        data: data
+        data
     });
 }
 
@@ -27,20 +27,18 @@ const get = async (req, res, next) => {
         id = Validate(isID, id);
 
         const skill = await Prisma.skill.findUnique({
-            where: {
-                id: id
-            },
+            where: { id },
             include: {
                 category: true
             }
         });
 
         // HANDLE NOT FOUND
-        if (skill == null) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
+        if (data == null) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
 
         res.status(200).json({
             messege: "berhasil mendapat data skill berdasarkan id = " + id,
-            data: skill
+            data
         });
 
     } catch (error) {
@@ -93,9 +91,7 @@ const put = async (req, res, next) => {
         skill = Validate(isSkill, skill)
 
         const currentSkill = await Prisma.skill.findUnique({
-            where: {
-                id: id
-            },
+            where: { id },
             select: {
                 id: true,
                 skillCategoryId: true
@@ -115,9 +111,7 @@ const put = async (req, res, next) => {
         }
 
         const updateSkill = await Prisma.skill.update({
-            where: {
-                id: id
-            },
+            where: { id },
             data: update_data
         });
 
@@ -147,12 +141,8 @@ const remove = async (req, res, next) => {
         // END VALIDATE ID
 
         const currentSkill = await Prisma.skill.findUnique({
-            where: {
-                id: id
-            },
-            select: {
-                id: true
-            }
+            where: { id },
+            select: { id: true }
         });
 
         if (!currentSkill) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
@@ -164,9 +154,7 @@ const remove = async (req, res, next) => {
 
         // EKSEKUSI DELETE
         await Prisma.skill.delete({
-            where: {
-                id: id
-            }
+            where: { id }
         });
 
         res.status(200).json({
