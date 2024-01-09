@@ -6,13 +6,12 @@ import jwt from 'jsonwebtoken';
 import { Prisma } from '../application/prisma.js';
 
 
-const createToken = (res, email, age) => {
+const createToken = (res, email, age = process.env.SESSION_AGE) => {
     // return token
     const jwtSecret = process.env.JWT_SECRET;
-    const maxAge = age ? age : process.env.SESSION_AGE;
 
     var token = jwt.sign({ email: email }, jwtSecret, {
-        expiresIn: maxAge
+        expiresIn: age
     });
 
     // SEND TOKEN TO COOKIE

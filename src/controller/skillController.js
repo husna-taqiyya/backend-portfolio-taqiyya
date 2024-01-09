@@ -147,15 +147,16 @@ const remove = async (req, res, next) => {
 
         if (!currentSkill) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
 
+        // EKSEKUSI DELETE
+        await Prisma.skill.delete({
+            where: { id }
+        });
+
         // remove category
         // id category sebelumnya
         const previous_skill_id = currentSkill.skillCategoryId;
         await skillService.remove_category(previous_skill_id);
 
-        // EKSEKUSI DELETE
-        await Prisma.skill.delete({
-            where: { id }
-        });
 
         res.status(200).json({
             messege: "Success"

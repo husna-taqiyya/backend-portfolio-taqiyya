@@ -14,7 +14,7 @@ const get = async (req, res, next) => {
         });
 
         // HANDLE NOT FOUND
-        if (blog == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+        if (education == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         res.status(200).json({
             messege: "berhasil mendapat data education berdasarkan id = " + id,
@@ -59,12 +59,12 @@ const put = async (req, res, next) => {
 
         education = Validate(isEducation, education);
 
-        const currentEducation = await Prisma.blog.findUnique({
+        const currentEducation = await Prisma.education.findUnique({
             where: { id },
             select: { id: true }
         });
 
-        if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+        if (!currentEducation) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
         const data = await Prisma.education.update({
             where: { id },
