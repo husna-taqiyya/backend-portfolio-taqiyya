@@ -26,7 +26,7 @@ const get = async (req, res, next) => {
         let id = req.params.id;
         id = Validate(isID, id);
 
-        const skill = await Prisma.skill.findUnique({
+        const data = await Prisma.data.findUnique({
             where: { id },
             include: {
                 category: true

@@ -7,7 +7,6 @@ import { Prisma } from '../application/prisma.js';
 import authService from '../service/authService.js';
 
 export const authMiddleware = async (req, res, next) => {
-    console.log("enter route blog middleware ===========")
     try {
         // check cookie token;
         const token = req.cookies.token;
@@ -23,8 +22,6 @@ export const authMiddleware = async (req, res, next) => {
                 token: true
             }
         });
-
-        console.log("user")
 
         if (!user) {
             // clear cookie agar tdk dipaki lagi

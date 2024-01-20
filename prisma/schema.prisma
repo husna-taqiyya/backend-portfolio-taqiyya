@@ -105,10 +105,25 @@ model SkillCategory {
 model Skill {
   id              Int           @id @default(autoincrement())
   title           String        @db.VarChar(100)
+  svg             String        @db.Text
   skillCategoryId Int           @db.Int
   category        SkillCategory @relation(fields: [skillCategoryId], references: [id])
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now()) @updatedAt
 
   @@map("skill")
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(100)
+  company     String   @db.VarChar(100)
+  location    String   @db.VarChar(100)
+  discription String   @db.Text
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@map("experience")
 }

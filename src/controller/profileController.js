@@ -42,6 +42,7 @@ const put = async (req, res, next) => {
         // collect data & validate
         let data = req.body;
         // validasi
+        console.log(data)
         data = Validate(isProfile, data)
 
         let dataProfile = {};
