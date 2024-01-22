@@ -6,7 +6,6 @@ import { ResponseError } from '../error/responseError.js';
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
 const getAll = async (req, res, next) => {
-    console.log("masuk ke method getAll")
     try {
         const experiences = await Prisma.experience.findMany();
 
@@ -74,8 +73,6 @@ const put = async (req, res, next) => {
         id = Validate(isID, id);
 
         experience = Validate(isExperience, experience);
-        console.log("masuk ke method put")
-        console.log(experience);
 
         const currentExperience = await Prisma.experience.findUnique({
             where: { id },
