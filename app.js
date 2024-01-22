@@ -16,6 +16,7 @@ import { logging } from "./src/middleware/logging.js";
 import { errorMiddleware } from './src/middleware/errorMiddleware.js';
 import { authMiddleware } from './src/middleware/authMiddleware.js';
 import { routerPublic } from './src/router/public.js';
+import { routerExperience } from './src/router/experience.js';
 
 //deskripsi aplikasi express
 const app = express();
@@ -51,6 +52,9 @@ app.use(routerProject);
 
 // ROUTER AUTH
 app.use(routerAuth);
+
+// ROUTER EXPERIENCE
+app.use(routerExperience);
 
 //MIDDLEWARE 404
 app.use(notFound);
