@@ -54,7 +54,7 @@ const post = async (req, res, next) => {
         })
 
         res.status(200).json({
-            messege: "berhasil mengubah data education sebagian berdasarkan id",
+            messege: "berhasil mengubah data experience sebagian berdasarkan id",
             data: newExperience
         });
 
