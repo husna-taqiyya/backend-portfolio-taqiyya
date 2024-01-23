@@ -6,7 +6,7 @@ import multer from 'multer';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '/tmp/my-uploads')
+        cb(null, './uploads')
     },
     filename: function (req, file, cb) {
         // date + random numer with date
@@ -15,8 +15,7 @@ const storage = multer.diskStorage({
         //get file extention
         const ext = file.originalname.split('.').pop();
 
-        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + ext);
-
+        cb(null, `${file.fieldname}-${uniqueSuffix}.${ext}`);
 
     }
 })
