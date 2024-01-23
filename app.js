@@ -4,7 +4,6 @@ dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
 
-
 import { routerProfile } from "./src/router/profile.js";
 import { routerEducation } from "./src/router/education.js";
 import { routerSkill } from "./src/router/skill.js";
@@ -17,6 +16,7 @@ import { errorMiddleware } from './src/middleware/errorMiddleware.js';
 import { authMiddleware } from './src/middleware/authMiddleware.js';
 import { routerPublic } from './src/router/public.js';
 import { routerExperience } from './src/router/experience.js';
+import fileService from './src/service/fileService.js';
 
 //deskripsi aplikasi express
 const app = express();
@@ -29,6 +29,9 @@ app.use(cookieParser());
 
 //belajar middleware => logging
 app.use(logging);
+
+// CREATE FOLDER UPLOADS
+fileService.createFolder('./uploads');
 
 // PUBLIC API / TANPA LOGIN
 app.use(routerPublic);

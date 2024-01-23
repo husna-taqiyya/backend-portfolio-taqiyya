@@ -35,6 +35,8 @@ const get = async (req, res, next) => {
 
 // PATH : METHOD UNTUK MENYIMPAN DATA PROFILE
 const put = async (req, res, next) => {
+    console.log(req.file);
+    return;
     try {
         // GET DATA PROFILE DARI DB, FIND FIRST
         const profile = await Prisma.profile.findFirst();
