@@ -7,11 +7,34 @@ import { isProject } from "../validation/projectValidation.js";
 // PATH : METHOD UNTUK MENYIMPAN DATA project
 const getAll = async (req, res, next) => {
     try {
-        const projects = await Prisma.project.findMany();
+        // PAGE
+        const page = parseInt(req.query.page) || 1;
+
+        // LIMIT
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        console.log('page, limit, skip')
+
+        console.log(page, limit, skip)
+
+        const data = await Prisma.project.findMany({
+            take: limit,
+            skip: skip
+        });
+
+        //get total data
+        const total = await Prisma.project.count();
+        const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
             messege: "berhasil mendapat data project",
-            data: projects
+            data,
+            total,
+            page,
+            limit,
+            maxPage
         });
     } catch (error) {
         next(error);
