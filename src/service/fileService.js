@@ -11,6 +11,15 @@ const createFolder = async (folderName) => {
     }
 }
 
+const removeFile = async (file) => {
+    try {
+        await fs.rm('.' + file);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
-    createFolder
+    createFolder,
+    removeFile
 }

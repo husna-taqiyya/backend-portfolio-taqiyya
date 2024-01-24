@@ -1,5 +1,6 @@
 import { Prisma } from '../application/prisma.js';
 import { Validate } from '../application/validate.js';
+import fileService from '../service/fileService.js';
 import { isProfile } from '../validation/profileValidation.js';
 
 
@@ -35,8 +36,6 @@ const get = async (req, res, next) => {
 
 // PATH : METHOD UNTUK MENYIMPAN DATA PROFILE
 const put = async (req, res, next) => {
-    // console.log(req.file);
-    // return;
     try {
         // GET DATA PROFILE DARI DB, FIND FIRST
         const profile = await Prisma.profile.findFirst();
@@ -53,10 +52,6 @@ const put = async (req, res, next) => {
         // validasi
         data = Validate(isProfile, data)
 
-        console.log("data setelah validasi");
-        console.log(data);
-        return;
-
         let dataProfile = {};
         if (profile == null) {
             // JIKA NULL, MAKA BUAT DATA BARU - CREATE
@@ -72,6 +67,12 @@ const put = async (req, res, next) => {
                 },
                 data
             });
+
+            // hapus poto lama
+
+            if (profile.avatar) {
+                await fileService.removeFile(profile.avatar);
+            }
         }
 
         res.status(200).json({
@@ -80,9 +81,27 @@ const put = async (req, res, next) => {
         });
 
     } catch (error) {
+        // jika error && ada file. maka file dihapus
+        console.log("andle error")
+
+        if (req.file) {
+            // handle buang file
+            await fileService.rm(req.file.path)
+
+        }
         next(error);
     }
 
+}
+
+const portfolio = (req, res, next) => {
+    try {
+        res.status(200).json({
+            message: "Berhasil ambil data portfolio"
+        })
+    } catch (error) {
+        next(error);
+    }
 }
 
 export default {
