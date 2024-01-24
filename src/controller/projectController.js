@@ -13,19 +13,11 @@ const getAll = async (req, res, next) => {
         // LIMIT
         const limit = parseInt(req.query.limit) || 10;
 
+        // SKIP
         const skip = (page - 1) * limit;
 
-        console.log('page, limit, skip')
+        const { data, total } = await getByPage(limit, skip);
 
-        console.log(page, limit, skip)
-
-        const data = await Prisma.project.findMany({
-            take: limit,
-            skip: skip
-        });
-
-        //get total data
-        const total = await Prisma.project.count();
         const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
@@ -38,6 +30,21 @@ const getAll = async (req, res, next) => {
         });
     } catch (error) {
         next(error);
+    }
+}
+
+const getByPage = async () => {
+    const data = await Prisma.project.findMany({
+        take: limit,
+        skip: skip
+    });
+
+    //get total data
+    const total = await Prisma.project.count();
+
+    return {
+        data,
+        total
     }
 }
 
