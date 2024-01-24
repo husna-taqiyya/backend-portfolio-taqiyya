@@ -7,28 +7,29 @@ import { isProfile } from '../validation/profileValidation.js';
 // PATH: METHOD GET UNTUK MENGAMBIL DATA PROFILE
 const get = async (req, res, next) => {
     try {
+        const data = await getProfile();
         // CEK KE DATABASE
-        let profile = await Prisma.profile.findFirst();
+        // let profile = await Prisma.profile.findFirst();
 
-        // jika kosong => kirim data dummy
-        if (!profile) {
-            // buat data dummy disini
-            profile = {
-                email: "example@gamil.com",
-                firstname: "-",
-                lastname: "-",
-                dob: "1900-10-10",
-                addres: "-",
-                job: "-",
-                city: "-",
-                country: "-"
-            };
-        }
+        // // jika kosong => kirim data dummy
+        // if (!profile) {
+        //     // buat data dummy disini
+        //     profile = {
+        //         email: "example@gamil.com",
+        //         firstname: "-",
+        //         lastname: "-",
+        //         dob: "1900-10-10",
+        //         addres: "-",
+        //         job: "-",
+        //         city: "-",
+        //         country: "-"
+        //     };
+        // }
 
         // jika ada isinya => kirim data asli
         res.status(200).json({
             message: "berhasil ambil data profile",
-            data: profile
+            data
         });
 
     } catch (error) {
@@ -96,8 +97,22 @@ const put = async (req, res, next) => {
 
 }
 
-const portfolio = (req, res, next) => {
+const portfolio = async (req, res, next) => {
     try {
+        // profile
+        const profile = await getProfile();
+
+        // project
+
+        //experience
+
+        // education
+
+        //skill by category
+
+        // blog
+
+
         res.status(200).json({
             message: "Berhasil ambil data portfolio"
         })
@@ -106,7 +121,29 @@ const portfolio = (req, res, next) => {
     }
 }
 
+
+const getProfile = async () => {
+
+    let profile = await Prisma.profile.findFirst();
+
+    // jika kosong => kirim data dummy
+    if (!profile) {
+        // buat data dummy disini
+        profile = {
+            email: "example@gamil.com",
+            firstname: "-",
+            lastname: "-",
+            dob: "1900-10-10",
+            addres: "-",
+            job: "-",
+            city: "-",
+            country: "-"
+        };
+    }
+}
+
 export default {
     get,
-    put
+    put,
+    portfolio
 }
