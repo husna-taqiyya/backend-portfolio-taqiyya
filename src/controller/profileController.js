@@ -8,23 +8,6 @@ import projectController from './projectController.js';
 const get = async (req, res, next) => {
     try {
         const data = await getProfile();
-        // CEK KE DATABASE
-        // let profile = await Prisma.profile.findFirst();
-
-        // // jika kosong => kirim data dummy
-        // if (!profile) {
-        //     // buat data dummy disini
-        //     profile = {
-        //         email: "example@gamil.com",
-        //         firstname: "-",
-        //         lastname: "-",
-        //         dob: "1900-10-10",
-        //         addres: "-",
-        //         job: "-",
-        //         city: "-",
-        //         country: "-"
-        //     };
-        // }
 
         // jika ada isinya => kirim data asli
         res.status(200).json({
@@ -103,7 +86,7 @@ const portfolio = async (req, res, next) => {
         const profile = await getProfile();
 
         // project
-        const { data: project } = await projectController.getByPage(4, 0);
+        const { data: projects } = await projectController.getByPage(4);
         //menghasilkan variable project
 
         //experience
@@ -116,10 +99,10 @@ const portfolio = async (req, res, next) => {
 
 
         res.status(200).json({
-            message: "Berhasil ambil data portfolio",
+            message: "Berhasil ambil data portfolio tes",
             data: {
                 profile: profile,
-                project: project.data
+                projects: projects
             }
         })
     } catch (error) {
@@ -146,6 +129,8 @@ const getProfile = async () => {
             country: "-"
         };
     }
+
+    return profile;
 }
 
 export default {

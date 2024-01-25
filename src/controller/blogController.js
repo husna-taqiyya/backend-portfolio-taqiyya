@@ -8,15 +8,45 @@ import { ResponseError } from '../error/responseError.js';
 // PATH: METHOD GET UNTUK BLOG
 const getAll = async (req, res, next) => {
     try {
-        // FIND MANY -> ambil semua blog
-        const blogs = await Prisma.blog.findMany();
+        // PAGE 
+        const page = parseInt(req.query.page) || 1;
+
+        // LIMIT
+        const limit = parseInt(req.query.limit) || 10;
+
+        // SKIP
+        const skip = (page - 1) * limit;
+
+        const { data, total } = await getByPage(limit, skip);
+
+        const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
             messege: "berhasil mendapat data blog",
-            blogs
+            data,
+            total,
+            page,
+            limit,
+            maxPage
         });
+
     } catch (error) {
-        next();
+        next(error);
+    }
+}
+
+const getByPage = async (limit, skip = 0) => {
+    const data = await Prisma.blog.findMany({
+        take: limit,
+        skip: skip
+    });
+
+    // get total semua data
+    const total = await Prisma.blog.count();
+
+    return {
+        data,
+        total
     }
 }
 
