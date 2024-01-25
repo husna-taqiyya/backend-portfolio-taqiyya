@@ -86,7 +86,7 @@ const portfolio = async (req, res, next) => {
         const profile = await getProfile();
 
         // project
-        const { data: projects } = await projectController.getByPage(4);
+        const { data: projects } = await projectController.getByPage(1, 4);
         //menghasilkan variable project
 
         //experience
