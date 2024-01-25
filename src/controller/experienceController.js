@@ -4,19 +4,26 @@ import { isID } from "../validation/mainValidation.js";
 import { isExperience } from "../validation/experienceValidation.js";
 import { ResponseError } from '../error/responseError.js';
 
-// PATH : METHOD UNTUK MENYIMPAN DATA project
+/// PATH : METHOD UNTUK MENYIMPAN DATA project
 const getAll = async (req, res, next) => {
     try {
-        const experiences = await Prisma.experience.findMany();
+        const data = await getExperiences();
 
         res.status(200).json({
             messege: "berhasil mendapat data experience",
-            data: experiences
+            data
         });
     } catch (error) {
         next(error);
     }
 }
+
+const getExperiences = async () => {
+    return await Prisma.experience.findMany({
+        orderBy: { 'startYear': 'desc' }
+    });
+}
+
 
 const get = async (req, res, next) => {
     try {

@@ -4,6 +4,26 @@ import { isID } from "../validation/mainValidation.js";
 import { isEducation } from "../validation/educationValidation.js";
 import { ResponseError } from '../error/responseError.js';
 
+// PATH : METHOD UNTUK MENYIMPAN DATA project
+const getAll = async (req, res, next) => {
+    try {
+        const data = await getEducations();
+
+        res.status(200).json({
+            messege: "berhasil mendapat data educasi",
+            data
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getEducations = async () => {
+    return await Prisma.education.findMany({
+        orderBy: { 'startYear': 'desc' }
+    });
+}
+
 const get = async (req, res, next) => {
     try {
         let id = req.params.id;
@@ -121,6 +141,7 @@ const remove = async (req, res, next) => {
 }
 
 export default {
+    getAll,
     get,
     post,
     patch,

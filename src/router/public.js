@@ -18,7 +18,7 @@ routerPublic.get('/blogs', blogController.getAll);
 routerPublic.get('/blog/:id', blogController.get);
 
 // EDUCATION
-// routerPublic.get('/educations', educationController.getAll); // get by id
+routerPublic.get('/educations', educationController.getAll); // get by id
 routerPublic.get('/education/:id', educationController.get);
 
 // PROFILE
@@ -29,10 +29,12 @@ routerPublic.get('/portfolio', profileController.portfolio);
 routerPublic.get('/projects', projectController.getAll);
 routerPublic.get('/project/:id', projectController.get);
 
-// SKILL
-routerPublic.get('/skills', skillController.getAll); // get All
-routerPublic.get('/skill/:id', skillController.get); // get 
 
 // EXPERIENCE
 routerPublic.get('/experiences', experienceController.getAll); // get All
 routerPublic.get('/experience/:id', experienceController.get); // get 
+
+// SKILL
+routerPublic.get('/skills', skillController.getAll); // get All
+routerPublic.get('/skill/:id', skillController.get); // get 
+routerPublic.get('/skill_by_category', skillController.getSkillByCategory);

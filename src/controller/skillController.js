@@ -8,9 +8,7 @@ import { isSkill } from "../validation/skillValidation.js";
 // PATH : METHOD 
 const getAll = async (req, res) => {
     const data = await Prisma.skill.findMany({
-        include: {
-            category: true
-        }
+        include: { category: true }
     })
 
 
@@ -19,6 +17,31 @@ const getAll = async (req, res) => {
         data
     });
 }
+
+// GET SKILL BY CATEGORY
+const getSkillByCategory = async (req, res, next) => {
+    try {
+        const data = await handleSkillByCategory();
+        res.status(200).json({
+            "message": "berhasil mendapatkan skill berdasarkan category",
+            data
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const handleSkillByCategory = async () => {
+    return await Prisma.skillCategory.findMany({
+        include: {
+            Skill: {
+                orderBy: { title: 'asc' }
+            }
+        },
+        orderBy: { title: 'asc' }
+    });
+}
+
 
 // 
 const get = async (req, res, next) => {
@@ -62,7 +85,8 @@ const post = async (req, res, next) => {
         // buat data skill yang akan disimpan
         const insert_data = {
             title: data.title,
-            skillCategoryId: id_category
+            skillCategoryId: id_category,
+            svg: data.svg
         }
 
         const skill_data = await Prisma.skill.create({
@@ -168,6 +192,8 @@ const remove = async (req, res, next) => {
 
 export default {
     getAll,
+    getSkillByCategory,
+    handleSkillByCategory,
     get,
     post,
     put,
