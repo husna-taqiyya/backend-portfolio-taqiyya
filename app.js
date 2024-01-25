@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from 'cors';
 
 import { routerProfile } from "./src/router/profile.js";
 import { routerEducation } from "./src/router/education.js";
@@ -32,6 +33,9 @@ app.use(logging);
 
 // CREATE FOLDER UPLOADS
 fileService.createFolder('./uploads');
+
+//cors
+app.use(cors());
 
 // PUBLIC API / TANPA LOGIN
 app.use(routerPublic);

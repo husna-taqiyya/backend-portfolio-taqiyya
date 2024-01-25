@@ -32,7 +32,7 @@ const getAll = async (req, res, next) => {
     }
 }
 
-const getByPage = async (page, limit = 10) => {
+const getByPage = async (page = 1, limit = 10) => {
     // CALCULAT SKIP
     const skip = (page - 1) * limit;
 
@@ -41,7 +41,7 @@ const getByPage = async (page, limit = 10) => {
         skip: skip
     });
 
-    // get total semua data
+    //get total data
     const total = await Prisma.blog.count();
 
     return {
@@ -49,6 +49,7 @@ const getByPage = async (page, limit = 10) => {
         total
     }
 }
+
 
 // GET BY ID
 const get = async (req, res, next) => {
@@ -199,5 +200,6 @@ export default {
     post,
     updateTitle,
     put,
-    remove
+    remove,
+    getByPage
 }

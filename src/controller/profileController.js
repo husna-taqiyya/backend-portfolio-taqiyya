@@ -3,7 +3,10 @@ import { Validate } from '../application/validate.js';
 import fileService from '../service/fileService.js';
 import { isProfile } from '../validation/profileValidation.js';
 import educationController from './educationController.js';
+import experienceController from './experienceController.js';
 import projectController from './projectController.js';
+import skillController from './skillController.js';
+import blogController from './blogController.js';
 
 // PATH: METHOD GET UNTUK MENGAMBIL DATA PROFILE
 const get = async (req, res, next) => {
@@ -91,21 +94,27 @@ const portfolio = async (req, res, next) => {
         //menghasilkan variable project
 
         //experience
+        const experience = await experienceController.getExperiences();
 
         // education
         const education = await educationController.getEducations();
 
         //skill by category
+        const skills = await skillController.handleSkillByCategory();
 
         // blog
+        const { data: blogs } = await blogController.getByPage(1, 4);
 
 
         res.status(200).json({
-            message: "Berhasil ambil data portfolio tes",
+            message: "Berhasil ambil data portfolio",
             data: {
-                profile: profile,
-                projects: projects,
-                education: education
+                profile,
+                projects,
+                experience,
+                education,
+                skills,
+                blogs
             }
         })
     } catch (error) {

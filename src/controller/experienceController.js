@@ -20,7 +20,7 @@ const getAll = async (req, res, next) => {
 
 const getExperiences = async () => {
     return await Prisma.experience.findMany({
-        orderBy: { 'startYear': 'desc' }
+        orderBy: { 'startDate': 'desc' }
     });
 }
 
@@ -133,6 +133,7 @@ const remove = async (req, res, next) => {
 
 export default {
     getAll,
+    getExperiences,
     get,
     post,
     put,

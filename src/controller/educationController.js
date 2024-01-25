@@ -142,6 +142,7 @@ const remove = async (req, res, next) => {
 
 export default {
     getAll,
+    getEducations,
     get,
     post,
     patch,
