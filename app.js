@@ -35,7 +35,9 @@ app.use(logging);
 fileService.createFolder('./uploads');
 
 //cors
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 
 // PUBLIC API / TANPA LOGIN
 app.use(routerPublic);
