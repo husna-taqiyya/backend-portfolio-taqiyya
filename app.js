@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
+import fs from 'fs/promises';
 
 import { routerProfile } from "./src/router/profile.js";
 import { routerEducation } from "./src/router/education.js";
@@ -38,6 +39,19 @@ fileService.createFolder('./uploads');
 app.use(cors({
     origin: 'http://localhost:3000'
 }));
+
+// SET STATIC FILES
+app.use('/uploads', express.static('./uploads'));
+// handle file not exist
+app.use('/uploads', async (req, res) => {
+    try {
+        await fs.access('/uploads' + req.url)
+    } catch (error) {
+        res.status(404).json({
+            message: "file not found"
+        })
+    }
+})
 
 // PUBLIC API / TANPA LOGIN
 app.use(routerPublic);

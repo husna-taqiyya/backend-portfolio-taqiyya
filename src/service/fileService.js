@@ -13,7 +13,7 @@ const createFolder = async (folderName) => {
 
 const removeFile = async (file) => {
     try {
-        await fs.rm('.' + file);
+        await fs.rm('./' + file);
     } catch (error) {
         next(error);
     }
