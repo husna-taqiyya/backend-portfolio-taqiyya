@@ -7,7 +7,7 @@ const isExperience = Joi.object({
     location: isString100.required(),
     description: isText.required(),
     startDate: Joi.date().max('now').required(),
-    endDate: Joi.date().min(Joi.ref('startDate')).max('now')
+    endDate: Joi.date().min(Joi.ref('startDate')).max('now').allow(null, "")
 });
 
 export {

@@ -7,6 +7,7 @@ import experienceController from './experienceController.js';
 import projectController from './projectController.js';
 import skillController from './skillController.js';
 import blogController from './blogController.js';
+import dayjs from 'dayjs';
 
 // PATH: METHOD GET UNTUK MENGAMBIL DATA PROFILE
 const get = async (req, res, next) => {
@@ -59,9 +60,12 @@ const put = async (req, res, next) => {
             });
 
             // hapus poto lama
-
-            if (profile.avatar) {
-                await fileService.removeFile(profile.avatar);
+            const avatar_lama = profile.avatar;
+            const avatar_baru = dataProfile.avatar;
+            if (avatar_lama) {
+                if (avatar_lama == !avatar_baru) {
+                    await fileService.removeFile(avatar_lama);
+                }
             }
         }
 
@@ -104,6 +108,19 @@ const portfolio = async (req, res, next) => {
 
         // blog
         const { data: blogs } = await blogController.getByPage(1, 4);
+
+        // calculate projects
+        profile.count_project = projects.length;
+
+        // hitung tahun pengalaman / experience
+        // kalkulasi project pertama -> startDate dengan tanggal sekarang, check perbandingannya berapa tahun
+
+        // ambil project aray terakhir
+        const firstProject = projects.findLast(p => true);
+        const firstProjectDate = dayjs(firstProject.startDate);
+
+        profile.year_of_experience = dayjs().diff(firstProjectDate, "year");
+        profile.month_of_experience = dayjs().diff(firstProjectDate, "month");
 
 
         res.status(200).json({

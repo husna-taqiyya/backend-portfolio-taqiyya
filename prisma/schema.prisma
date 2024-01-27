@@ -25,7 +25,8 @@ model Profile {
   email     String   @id @db.VarChar(100)
   firstname String   @db.VarChar(100)
   lastname  String   @db.VarChar(100)
-  avatar    String?  @db.VarChar(255)
+  avatar_md String?  @db.VarChar(255)
+  avatar_sm String?  @db.VarChar(255)
   dob       DateTime @db.Date
   addres    String   @db.Text
   city      String   @db.VarChar(100)
@@ -82,7 +83,7 @@ enum ProjectStatus {
 
 model Education {
   id             Int      @id @default(autoincrement())
-  instutuionName String   @db.VarChar(100)
+  insitutionName String   @db.VarChar(100)
   startYear      Int      @db.Int
   endYear        Int?     @db.Int
   major          String?  @db.VarChar(100)

@@ -1,12 +1,12 @@
 import Joi from 'joi';
-import { isString100, isYear } from './mainValidation.js';
 
+const maxYear = new Date().getFullYear();
 const isEducation = Joi.object({
-    institutionName: isString100.required().label("institutionName"),
-    startYear: isYear.required().label("Start Year"),
-    endYear: isYear,
-    major: isString100,
-    degree: isString100
+    institutionName: Joi.string().min(3).max(100).trim().required(),
+    startYear: Joi.number().max(maxYear).positive().required(),
+    endYear: Joi.number().max(maxYear).positive().required(),
+    major: Joi.string().max(100).trim().allow(''),
+    degree: Joi.string().max(100).trim().allow('')
 });
 
 export {
