@@ -3,6 +3,22 @@ import { Validate } from "../application/validate.js";
 import { ResponseError } from "../error/responseError.js";
 import { isID } from "../validation/mainValidation.js";
 import { isProject } from "../validation/projectValidation.js";
+import dayjs from 'dayjs';
+
+const formatData = (project) => {
+    // startDate
+    const startDate = project.startDate;
+    project.readStartDate = dayjs(startDate).format('DD MMM YYYY');
+
+    if (project.endDate) {
+        const endDate = project.endDate;
+        project.readEndDate = dayjs(endDate).format('DD MMM YYYY');
+    } else {
+        project.readEndDate = 'Present'
+    }
+
+
+}
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
 const getAll = async (req, res, next) => {
@@ -13,7 +29,7 @@ const getAll = async (req, res, next) => {
         // LIMIT
         const limit = parseInt(req.query.limit) || 10;
 
-        const { data, total } = await getByPage(limit, skip);
+        const { data, total } = await getByPage(page, limit);
 
         const maxPage = Math.ceil(total / limit);
 
@@ -39,6 +55,11 @@ const getByPage = async (page = 1, limit = 10) => {
         skip: skip
     });
 
+    // format data to get readable date time
+    for (const project of data) {
+        formatData(project)
+    }
+
     //get total data
     const total = await Prisma.project.count();
 
@@ -58,11 +79,13 @@ const get = async (req, res, next) => {
             where: { id }
         });
 
-        if (data == null) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+        if (project == null) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+
+        formatData(project);
 
         res.status(200).json({
             messege: "berhasil mendapat data project berdasarkan id = " + id,
-            data
+            data: project
         });
     } catch (error) {
         next(error);
@@ -81,6 +104,8 @@ const post = async (req, res, next) => {
         const newProject = await Prisma.project.create({
             data: project
         })
+
+        formatData(newProject);
 
         res.status(200).json({
             messege: "berhasil menyimpan data project sebagian berdasarkan id",
@@ -109,6 +134,8 @@ const put = async (req, res, next) => {
         });
 
         if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+
+        formatData(data);
 
         const updateData = await Prisma.project.update({
             where: { id },

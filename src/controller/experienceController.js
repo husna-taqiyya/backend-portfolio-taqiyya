@@ -3,6 +3,23 @@ import { Validate } from "../application/validate.js";
 import { isID } from "../validation/mainValidation.js";
 import { isExperience } from "../validation/experienceValidation.js";
 import { ResponseError } from '../error/responseError.js';
+import dayjs from 'dayjs';
+
+const formatData = (experience) => {
+    //nov 2022
+    //start date
+    const startDate = experience.createdAt;
+    experience.readStartDate = dayjs(startDate).format('MMMM YYYY');
+
+    //end Date
+    if (experience.endDate) {
+        const endDate = experience.endDate;
+        experience.shortStartDate = dayjs(endDate).format('MMM YYYY')
+    } else {
+        experience.readEndDate = 'Present';
+    }
+
+}
 
 /// PATH : METHOD UNTUK MENYIMPAN DATA project
 const getAll = async (req, res, next) => {
@@ -19,9 +36,16 @@ const getAll = async (req, res, next) => {
 }
 
 const getExperiences = async () => {
-    return await Prisma.experience.findMany({
+    const data = await Prisma.experience.findMany({
         orderBy: { 'startDate': 'desc' }
     });
+
+    // format data to get readable date time
+    for (const experiences of data) {
+        formatData(experiences)
+    }
+
+    return data;
 }
 
 
@@ -36,6 +60,8 @@ const get = async (req, res, next) => {
 
         // HANDLE NOT FOUND
         if (experience == null) throw new ResponseError(404, `experience dengan ${id} tidak ditemukan`);
+
+        formatData(data);
 
         res.status(200).json({
             messege: "berhasil mendapat data experience berdasarkan id = " + id,
@@ -59,6 +85,8 @@ const post = async (req, res, next) => {
         const newExperience = await Prisma.experience.create({
             data: experience
         })
+
+        formatData(data);
 
         res.status(200).json({
             messege: "berhasil mengubah data experience sebagian berdasarkan id",
@@ -87,6 +115,8 @@ const put = async (req, res, next) => {
         });
 
         if (!currentExperience) throw new ResponseError(404, `experience dengan ${id} tidak ditemukan`);
+
+        formatData(data);
 
         const updateData = await Prisma.experience.update({
             where: { id },

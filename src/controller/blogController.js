@@ -5,6 +5,8 @@ import { isBlog, isBlogTitle } from '../validation/blogValidation.js';
 import { ResponseError } from '../error/responseError.js';
 import dayjs from 'dayjs';
 
+
+
 const formatData = (blog) => {
     const date = blog.createdAt;
     blog.readDateTime = dayjs(date).format('DD MMMM YYYY HH:mm:ss');
@@ -100,6 +102,8 @@ const post = async (req, res, next) => {
         const newBlog = await Prisma.blog.create({
             data: blog
         });
+
+        formatData(data);
 
         res.status(200).json({
             messege: "berhasil menyimpan data ke blog",
@@ -197,8 +201,6 @@ const remove = async (req, res, next) => {
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
-
-        formatData(data);
 
         // EKSEKUSI DELETE
         await Prisma.blog.delete({
