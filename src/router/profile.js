@@ -1,5 +1,6 @@
 import express from 'express';
 import profileController from '../controller/profileController.js';
+
 import multer from 'multer';
 
 // const upload = multer({ dest: 'uploads/' })
@@ -18,7 +19,7 @@ const storage = multer.diskStorage({
         cb(null, `${file.fieldname}-${uniqueSuffix}.${ext}`);
 
     }
-})
+});
 
 const upload = multer({ storage: storage })
 

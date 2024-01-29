@@ -92,22 +92,50 @@ const get = async (req, res, next) => {
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const post = async (req, res, next) => {
     try {
+        // untuk mengumpulkan photo path
+        const photos = [];
+
+        if (req.files) {
+            // loop photos
+            for (const file of req.files) {
+                // add slash to photo
+                let photo = '/' + file.path.replaceAll("\\", "/");
+
+                // buat object photo berdasarkan schema photo
+                photo = {
+                    path: photo
+                }
+
+                photos.push(photo);
+            }
+
+        }
+
         let blog = req.body;
+        console.log("photos ===============");
+        console.log(photos);
 
         // BLOG VALIDATE
         blog = Validate(isBlog, blog)
 
-        // END: JOI VALIDATE
-
-        const newBlog = await Prisma.blog.create({
-            data: blog
+        // create blog beserta photos
+        const data = await Prisma.blog.create({
+            data: {
+                ...blog,
+                photos: {
+                    create: photos
+                }
+            },
+            include: {
+                photos: true
+            }
         });
 
         formatData(data);
 
         res.status(200).json({
             messege: "berhasil menyimpan data ke blog",
-            data: newBlog
+            data
         });
     } catch (error) {
         next(error);
