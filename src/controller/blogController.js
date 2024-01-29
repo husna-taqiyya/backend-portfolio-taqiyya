@@ -3,19 +3,26 @@ import { Validate } from '../application/validate.js';
 import { isID } from '../validation/mainValidation.js';
 import { isBlog, isBlogTitle } from '../validation/blogValidation.js';
 import { ResponseError } from '../error/responseError.js';
+import dayjs from 'dayjs';
 
+const formatData = (blog) => {
+    const date = blog.createdAt;
+    blog.readDateTime = dayjs(date).format('DD MMMM YYYY HH:mm:ss');
+    blog.shortDateTime = dayjs(date).format('D MMM YYYY HH:mm')
+
+}
 
 // PATH: METHOD GET UNTUK BLOG
 const getAll = async (req, res, next) => {
     try {
-        // PAGE 
+        // PAGE
         const page = parseInt(req.query.page) || 1;
 
         // LIMIT
         const limit = parseInt(req.query.limit) || 10;
 
-        const { data, total } = await getByPage(limit, skip);
-
+        // get total data
+        const { data, total } = await getByPage(page, limit);
         const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
@@ -33,13 +40,18 @@ const getAll = async (req, res, next) => {
 }
 
 const getByPage = async (page = 1, limit = 10) => {
-    // CALCULAT SKIP
+    // SKIP
     const skip = (page - 1) * limit;
 
     const data = await Prisma.blog.findMany({
         take: limit,
         skip: skip
     });
+
+    // format data to get readable date time
+    for (const blog of data) {
+        formatData(blog);
+    }
 
     //get total data
     const total = await Prisma.blog.count();
@@ -50,19 +62,20 @@ const getByPage = async (page = 1, limit = 10) => {
     }
 }
 
-
 // GET BY ID
 const get = async (req, res, next) => {
     try {
         let id = req.params.id;
         id = Validate(isID, id);
 
-        const blog = await Prisma.blog.findUnique({
+        const data = await Prisma.blog.findUnique({
             where: { id }
         });
 
         // HANDLE NOT FOUND
         if (data == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+
+        formatData(data);
 
         res.status(200).json({
             messege: "berhasil mendapat data blog berdasarkan id = " + id,
@@ -115,6 +128,8 @@ const put = async (req, res, next) => {
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
+        formatData(data);
+
         const updateData = await Prisma.blog.update({
             where: { id },
             data: updateData
@@ -148,6 +163,8 @@ const updateTitle = async (req, res, next) => {
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
+        formatData(data);
+
         // EKSEKUSI PATCH
         const updateTitle = await Prisma.blog.update({
             where: { id },
@@ -180,6 +197,8 @@ const remove = async (req, res, next) => {
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+
+        formatData(data);
 
         // EKSEKUSI DELETE
         await Prisma.blog.delete({
