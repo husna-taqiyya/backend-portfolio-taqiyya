@@ -9,7 +9,8 @@ const isProject = Joi.object({
     status: Joi.string().valid('ON_PROGRESS', 'MAINTENANCE', 'COMPLETE'),
     url: isURI,
     github: isURI,
-    company: isString100
+    company: isString100,
+    photos: Joi.array().items(Joi.number()) // kumpulan id [1, 2, 3]
 })
 
 export {

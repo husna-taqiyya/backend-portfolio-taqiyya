@@ -115,8 +115,6 @@ const post = async (req, res, next) => {
                 photos: true
             }
         });
-        console.log('data ========================')
-        console.log(data)
 
         formatData(data);
 
@@ -150,25 +148,62 @@ const put = async (req, res, next) => {
 
         const currentProject = await Prisma.project.findUnique({
             where: { id },
-            select: { id: true }
+            include: {
+                photos: true
+            }
+
         });
 
         if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
 
-        formatData(data);
+        // kumpulkan id photo
+        const currentPhotos = currentProject.photos.map(photo => photo.id);
+        const idYangDiPertahankan = project.photos || [];
 
-        const updateData = await Prisma.project.update({
+        // filter foto yang di pertahankan
+        // current photos di filter berdasarkan id yang dipertahankan
+        const keepsPhotos = currentPhotos.filter(idPhoto => idYangDiPertahankan.includes(idPhoto));
+
+        // hapus variable photo
+        delete project.photos;
+
+        // simpan foto baru
+        const newPhotos = fileService.getUploadedPhotos(req);
+
+
+        const data = await Prisma.project.update({
             where: { id },
-            data: project
+            data: {
+                ...project,
+                photos: {
+                    deleteMany: {
+                        id: {
+                            notIn: keepsPhotos
+                        }
+                    },
+                    create: newPhotos
+                }
+            },
+            include: {
+                photos: true
+            }
         });
 
+        formatData(data);
 
         res.status(200).json({
             messege: "Berhasil ubah data project seluruhnya berdasarkan id",
-            data: updateData
+            data
         });
     } catch (error) {
-        next();
+        console.log(error)
+        if (req.files) {
+            // buang file jika error
+            for (const file of req.files) {
+                await fileService.removeFile(file.path);
+            }
+        }
+        next(error);
     }
 }
 
