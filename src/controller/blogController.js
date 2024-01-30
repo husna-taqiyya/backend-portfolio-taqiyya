@@ -4,8 +4,7 @@ import { isID } from '../validation/mainValidation.js';
 import { isBlog, isBlogTitle } from '../validation/blogValidation.js';
 import { ResponseError } from '../error/responseError.js';
 import dayjs from 'dayjs';
-
-
+import fileService from '../service/fileService.js';
 
 const formatData = (blog) => {
     const date = blog.createdAt;
@@ -47,7 +46,10 @@ const getByPage = async (page = 1, limit = 10) => {
 
     const data = await Prisma.blog.findMany({
         take: limit,
-        skip: skip
+        skip: skip,
+        include: {
+            photos: true
+        }
     });
 
     // format data to get readable date time
@@ -71,7 +73,10 @@ const get = async (req, res, next) => {
         id = Validate(isID, id);
 
         const data = await Prisma.blog.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                photos: true
+            }
         });
 
         // HANDLE NOT FOUND
@@ -94,7 +99,6 @@ const post = async (req, res, next) => {
     try {
         // untuk mengumpulkan photo path
         const photos = [];
-
         if (req.files) {
             // loop photos
             for (const file of req.files) {
@@ -112,14 +116,13 @@ const post = async (req, res, next) => {
         }
 
         let blog = req.body;
-        console.log("photos ===============");
-        console.log(photos);
 
         // BLOG VALIDATE
         blog = Validate(isBlog, blog)
 
         // create blog beserta photos
         const data = await Prisma.blog.create({
+            where: { id },
             data: {
                 ...blog,
                 photos: {
@@ -138,6 +141,11 @@ const post = async (req, res, next) => {
             data
         });
     } catch (error) {
+        if (req.files) {
+            for (const file of req.files) {
+                await fileService.removeFile(file.path);
+            }
+        }
         next(error);
     }
 }
@@ -155,23 +163,67 @@ const put = async (req, res, next) => {
 
         const currentBlog = await Prisma.blog.findUnique({
             where: { id },
-            select: { id: true }
+            include: {
+                photos: true
+            }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
+        const currentPhotos = currentBlog.photos.map(photo => photo.id);
+        const idYangDiPertahankan = blog.photos || [];
+
+        // filter foto yang di pertahankan
+        // current photos di filter berdasarkan id yang dipertahankan
+        const keepsPhotos = currentPhotos.filter(idPhoto => idYangDiPertahankan.includes(idPhoto));
+
+        // hapus variable photo
+        delete blog.photos;
+
+        // ambil foto yang tdk di hapus
+        console.log('ini adalah id yang di pertahankan ==================')
+        console.log(keepsPhotos);
+        console.log('data blog yang mau di simpan')
+        console.log(blog)
+
+        // TODO simpan foto baru
+
+        // throw new Error('test update')
+
+        // update blog
+        // buang photo yang tdk dipertahankan
+        // create foto baru
+        const data = await Prisma.blog.update({
+            where: { id },
+            data: {
+                ...blog,
+                photos: {
+                    deleteMany: {
+                        id: {
+                            notIn: keepsPhotos // delete yang tidak di pertahankan
+                        }
+                    }
+                }
+            },
+            include: {
+                photos: true
+            }
+        });
+
         formatData(data);
 
-        const updateData = await Prisma.blog.update({
-            where: { id },
-            data: updateData
-        });
-
         res.status(200).json({
-            messege: "berhasil menyimpan data blog",
-            data: updateData
+            messege: "berhasil mengupdate data blog",
+            data
         });
     } catch (error) {
+        console.log(error)
+        if (req.files) {
+            // buang file jika error
+            for (const file of req.files) {
+                await fileService.removeFile(file.path);
+            }
+        }
         next(error);
     }
 }
@@ -200,7 +252,10 @@ const updateTitle = async (req, res, next) => {
         // EKSEKUSI PATCH
         const updateTitle = await Prisma.blog.update({
             where: { id },
-            data: { title }
+            data: { title },
+            include: {
+                photos: true
+            }
         });
 
         res.status(200).json({
@@ -212,7 +267,6 @@ const updateTitle = async (req, res, next) => {
         next(error);
     }
 }
-
 
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const remove = async (req, res, next) => {
@@ -246,9 +300,9 @@ const remove = async (req, res, next) => {
 export default {
     getAll,
     get,
+    getByPage,
     post,
     updateTitle,
     put,
-    remove,
-    getByPage
+    remove
 }
