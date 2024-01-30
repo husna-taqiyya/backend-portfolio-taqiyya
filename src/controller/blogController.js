@@ -94,26 +94,31 @@ const get = async (req, res, next) => {
     }
 }
 
+const getuploadedPhotos = (req) => {
+    const photos = [];
+    if (req.files) {
+        // loop photos
+        for (const file of req.files) {
+            // add slash to photo
+            let photo = '/' + file.path.replaceAll("\\", "/");
+
+            // buat object photo berdasarkan schema photo
+            photo = {
+                path: photo
+            }
+
+            photos.push(photo);
+        }
+
+    }
+    return photos;
+}
+
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const post = async (req, res, next) => {
     try {
         // untuk mengumpulkan photo path
-        const photos = [];
-        if (req.files) {
-            // loop photos
-            for (const file of req.files) {
-                // add slash to photo
-                let photo = '/' + file.path.replaceAll("\\", "/");
-
-                // buat object photo berdasarkan schema photo
-                photo = {
-                    path: photo
-                }
-
-                photos.push(photo);
-            }
-
-        }
+        const photos = getuploadedPhotos(req);
 
         let blog = req.body;
 
@@ -122,7 +127,6 @@ const post = async (req, res, next) => {
 
         // create blog beserta photos
         const data = await Prisma.blog.create({
-            where: { id },
             data: {
                 ...blog,
                 photos: {
@@ -180,19 +184,10 @@ const put = async (req, res, next) => {
         // hapus variable photo
         delete blog.photos;
 
-        // ambil foto yang tdk di hapus
-        console.log('ini adalah id yang di pertahankan ==================')
-        console.log(keepsPhotos);
-        console.log('data blog yang mau di simpan')
-        console.log(blog)
+        // simpan foto baru
+        const newPhotos = getuploadedPhotos(req);
 
-        // TODO simpan foto baru
-
-        // throw new Error('test update')
-
-        // update blog
-        // buang photo yang tdk dipertahankan
-        // create foto baru
+        // update blog + delete foto yg tdk di pertahankan
         const data = await Prisma.blog.update({
             where: { id },
             data: {
@@ -202,7 +197,8 @@ const put = async (req, res, next) => {
                         id: {
                             notIn: keepsPhotos // delete yang tidak di pertahankan
                         }
-                    }
+                    },
+                    create: newPhotos // add new photo
                 }
             },
             include: {
