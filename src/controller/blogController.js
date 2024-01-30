@@ -167,7 +167,7 @@ const put = async (req, res, next) => {
         delete blog.photos;
 
         // simpan foto baru
-        const newPhotos = getuploadedPhotos(req);
+        const newPhotos = fileService.getUploadedPhotos(req);
 
         // update blog + delete foto yg tdk di pertahankan
         const data = await Prisma.blog.update({

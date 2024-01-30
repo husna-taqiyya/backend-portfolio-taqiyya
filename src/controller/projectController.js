@@ -3,6 +3,7 @@ import { Validate } from "../application/validate.js";
 import { ResponseError } from "../error/responseError.js";
 import { isID } from "../validation/mainValidation.js";
 import { isProject } from "../validation/projectValidation.js";
+import fileService from "../service/fileService.js";
 import dayjs from 'dayjs';
 
 const formatData = (project) => {
@@ -95,24 +96,43 @@ const get = async (req, res, next) => {
 // PATH : METHOD UNTUK MENYIMPAN DATA project
 const post = async (req, res, next) => {
     try {
+        // untuk mengumpulkan photo path
+        const photos = fileService.getUploadedPhotos(req);
+
         let project = req.body;
 
         //validate
         project = Validate(isProject, project)
 
-        // project
-        const newProject = await Prisma.project.create({
-            data: project
-        })
+        const data = await Prisma.project.create({
+            data: {
+                ...project,
+                photos: {
+                    create: photos
+                }
+            },
+            include: {
+                photos: true
+            }
+        });
+        console.log('data ========================')
+        console.log(data)
 
-        formatData(newProject);
+        formatData(data);
 
         res.status(200).json({
             messege: "berhasil menyimpan data project sebagian berdasarkan id",
-            data: newProject
+            data
         });
 
     } catch (error) {
+        console.log(error)
+        if (req.files) {
+            // buang file jika error
+            for (const file of req.files) {
+                await fileService.removeFile(file.path);
+            }
+        }
         next(error);
     }
 }
