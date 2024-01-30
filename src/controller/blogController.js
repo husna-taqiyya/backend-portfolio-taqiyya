@@ -49,10 +49,12 @@ const getByPage = async (page = 1, limit = 10) => {
         skip: skip,
         include: {
             photos: true
-        }
+        },
+        orderBy: { createdAt: 'desc' } // ambil yang tebaru
     });
 
     // format data to get readable date time
+    // loop data
     for (const blog of data) {
         formatData(blog);
     }
