@@ -38,8 +38,29 @@ const removeFile = async (file) => {
     }
 }
 
+const getUploadedPhotos = (req) => {
+    const photos = [];
+    if (req.files) {
+        // loop photos
+        for (const file of req.files) {
+            // add slash to photo
+            let photo = '/' + file.path.replaceAll("\\", "/");
+
+            // buat object photo berdasarkan schema photo
+            photo = {
+                path: photo
+            }
+
+            photos.push(photo);
+        }
+
+    }
+    return photos;
+}
+
 export default {
     createFolder,
     removeFile,
-    upload
+    upload,
+    getUploadedPhotos
 }

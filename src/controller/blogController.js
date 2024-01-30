@@ -96,31 +96,11 @@ const get = async (req, res, next) => {
     }
 }
 
-const getuploadedPhotos = (req) => {
-    const photos = [];
-    if (req.files) {
-        // loop photos
-        for (const file of req.files) {
-            // add slash to photo
-            let photo = '/' + file.path.replaceAll("\\", "/");
-
-            // buat object photo berdasarkan schema photo
-            photo = {
-                path: photo
-            }
-
-            photos.push(photo);
-        }
-
-    }
-    return photos;
-}
-
 // PATH : METHOD UNTUK MENYIMPAN DATA BLOG
 const post = async (req, res, next) => {
     try {
         // untuk mengumpulkan photo path
-        const photos = getuploadedPhotos(req);
+        const photos = fileService.getUploadedPhotos(req);
 
         let blog = req.body;
 
