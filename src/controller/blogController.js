@@ -156,6 +156,7 @@ const put = async (req, res, next) => {
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
+        // kumpulkan id photo
         const currentPhotos = currentBlog.photos.map(photo => photo.id);
         const idYangDiPertahankan = blog.photos || [];
 
@@ -195,7 +196,6 @@ const put = async (req, res, next) => {
             data
         });
     } catch (error) {
-        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {

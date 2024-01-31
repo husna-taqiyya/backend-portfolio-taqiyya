@@ -1,10 +1,10 @@
 import { Prisma } from "../application/prisma.js";
 import { Validate } from "../application/validate.js";
-import { ResponseError } from "../error/responseError.js";
 import { isID } from "../validation/mainValidation.js";
 import { isProject } from "../validation/projectValidation.js";
-import fileService from "../service/fileService.js";
+import { ResponseError } from "../error/responseError.js";
 import dayjs from 'dayjs';
+import fileService from "../service/fileService.js";
 
 const formatData = (project) => {
     // startDate
@@ -17,8 +17,6 @@ const formatData = (project) => {
     } else {
         project.readEndDate = 'Present'
     }
-
-
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
@@ -53,7 +51,11 @@ const getByPage = async (page = 1, limit = 10) => {
 
     const data = await Prisma.project.findMany({
         take: limit,
-        skip: skip
+        skip: skip,
+        include: {
+            photos: true
+        },
+        orderBy: { startDate: 'desc' }
     });
 
     // format data to get readable date time
@@ -76,17 +78,20 @@ const get = async (req, res, next) => {
         let id = req.params.id;
         id = Validate(isID, id);
 
-        const project = await Prisma.project.findUnique({
-            where: { id }
+        const data = await Prisma.project.findUnique({
+            where: { id },
+            include: {
+                photos: true
+            }
         });
 
-        if (project == null) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+        if (data == null) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
 
-        formatData(project);
+        formatData(data);
 
         res.status(200).json({
             messege: "berhasil mendapat data project berdasarkan id = " + id,
-            data: project
+            data
         });
     } catch (error) {
         next(error);
@@ -124,7 +129,6 @@ const post = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {
@@ -196,7 +200,6 @@ const put = async (req, res, next) => {
             data
         });
     } catch (error) {
-        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {
