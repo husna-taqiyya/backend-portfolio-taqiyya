@@ -17,6 +17,12 @@ const formatData = (project) => {
     } else {
         project.readEndDate = 'Present'
     }
+
+    // buang pengubung relasi, krn many to many
+    const skills = project.skills.map(projectSkill => {
+        return projectSkill.Skill
+    });
+    project.skills = skills;
 }
 
 // PATH : METHOD UNTUK MENYIMPAN DATA project
@@ -53,7 +59,12 @@ const getByPage = async (page = 1, limit = 10) => {
         take: limit,
         skip: skip,
         include: {
-            photos: true
+            photos: true,
+            skills: {
+                include: {
+                    Skill: true
+                }
+            }
         },
         orderBy: { startDate: 'desc' }
     });
@@ -81,7 +92,12 @@ const get = async (req, res, next) => {
         const data = await Prisma.project.findUnique({
             where: { id },
             include: {
-                photos: true
+                photos: true,
+                skills: {
+                    include: {
+                        Skill: true
+                    }
+                }
             }
         });
 
@@ -106,18 +122,38 @@ const post = async (req, res, next) => {
 
         let project = req.body;
 
+
         //validate
         project = Validate(isProject, project)
+
+        // [{skillId: 5}, {skillId: 6}]
+        const skills = project.skills.map(s => {
+            return {
+                skillId: s
+            }
+        });
+
+        delete project.skills
 
         const data = await Prisma.project.create({
             data: {
                 ...project,
                 photos: {
                     create: photos
+                },
+                skills: {
+                    createMany: {
+                        data: skills
+                    }
                 }
             },
             include: {
-                photos: true
+                photos: true,
+                skills: {
+                    include: {
+                        Skill: true
+                    }
+                }
             }
         });
 
@@ -129,6 +165,7 @@ const post = async (req, res, next) => {
         });
 
     } catch (error) {
+        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {
@@ -153,7 +190,8 @@ const put = async (req, res, next) => {
         const currentProject = await Prisma.project.findUnique({
             where: { id },
             include: {
-                photos: true
+                photos: true,
+                skills: true
             }
 
         });
@@ -174,6 +212,14 @@ const put = async (req, res, next) => {
         // simpan foto baru
         const newPhotos = fileService.getUploadedPhotos(req);
 
+        const skills = project.skills.map(s => {
+            return {
+                skillId: s
+            }
+        });
+
+        // delete skill from data update
+        delete project.skills;
 
         const data = await Prisma.project.update({
             where: { id },
@@ -182,24 +228,36 @@ const put = async (req, res, next) => {
                 photos: {
                     deleteMany: {
                         id: {
-                            notIn: keepsPhotos
+                            notIn: keepsPhotos // delete yang tdk diperlukan
                         }
                     },
-                    create: newPhotos
+                    create: newPhotos // add new photo
+                },
+                skills: {
+                    deleteMany: {}, // clear data relasi
+                    createMany: {
+                        data: skills // simpan ualng, data hasil mapping
+                    }
                 }
             },
             include: {
-                photos: true
+                photos: true,
+                skills: {
+                    include: {
+                        Skill: true
+                    }
+                }
             }
         });
 
         formatData(data);
 
         res.status(200).json({
-            messege: "Berhasil ubah data project seluruhnya berdasarkan id",
+            messege: "Berhasil ubah data project berdasarkan id",
             data
         });
     } catch (error) {
+        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {

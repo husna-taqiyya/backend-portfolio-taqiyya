@@ -146,11 +146,11 @@ model Photo {
 
 // skill yang dipakai di project
 model ProjectSkill {
-  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId Int
-  Skill     Skill?   @relation(fields: [skillId], references: [id])
+  Skill     Skill?   @relation(fields: [skillId], references: [id], onDelete: Cascade)
   skillId   Int
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId Int
 
-  @@id([projectId, skillId])
+  @@id([skillId, projectId])
   @@map("projectskill")
 }
