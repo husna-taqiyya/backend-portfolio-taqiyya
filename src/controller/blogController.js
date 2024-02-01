@@ -47,9 +47,7 @@ const getByPage = async (page = 1, limit = 10) => {
     const data = await Prisma.blog.findMany({
         take: limit,
         skip: skip,
-        include: {
-            photos: true
-        },
+        include: { photos: true },
         orderBy: { createdAt: 'desc' } // ambil yang tebaru
     });
 
@@ -76,9 +74,7 @@ const get = async (req, res, next) => {
 
         const data = await Prisma.blog.findUnique({
             where: { id },
-            include: {
-                photos: true
-            }
+            include: { photos: true }
         });
 
         // HANDLE NOT FOUND
@@ -86,11 +82,7 @@ const get = async (req, res, next) => {
 
         formatData(data);
 
-        res.status(200).json({
-            messege: "berhasil mendapat data blog berdasarkan id = " + id,
-            data
-        });
-
+        res.status(200).json(data);
     } catch (error) {
         next(error);
     }
@@ -115,9 +107,7 @@ const post = async (req, res, next) => {
                     create: photos
                 }
             },
-            include: {
-                photos: true
-            }
+            include: { photos: true }
         });
 
         formatData(data);

@@ -15,10 +15,7 @@ const get = async (req, res, next) => {
         const data = await getProfile();
 
         // jika ada isinya => kirim data asli
-        res.status(200).json({
-            message: "berhasil ambil data profile",
-            data
-        });
+        res.status(200).json(data);
 
     } catch (error) {
         next(error);
@@ -124,16 +121,13 @@ const portfolio = async (req, res, next) => {
 
 
         res.status(200).json({
-            message: "Berhasil ambil data portfolio",
-            data: {
-                profile,
-                projects,
-                experience,
-                education,
-                skills,
-                blogs
-            }
-        })
+            profile,
+            projects,
+            experience,
+            education,
+            skills,
+            blogs
+        });
     } catch (error) {
         next(error);
     }

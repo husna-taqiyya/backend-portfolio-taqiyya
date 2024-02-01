@@ -8,9 +8,9 @@ import skillController from "../controller/skillController.js";
 import experienceController from "../controller/experienceController.js";
 
 export const routerPublic = express.Router();
+
 // untuk login
 routerPublic.post('/login', authController.login);
-
 
 //get all blogs
 routerPublic.get('/blogs', blogController.getAll);

@@ -22,10 +22,8 @@ const getAll = async (req, res) => {
 const getSkillByCategory = async (req, res, next) => {
     try {
         const data = await handleSkillByCategory();
-        res.status(200).json({
-            "message": "berhasil mendapatkan skill berdasarkan category",
-            data
-        })
+
+        res.status(200).json(data)
     } catch (error) {
         next(error);
     }
@@ -49,7 +47,7 @@ const get = async (req, res, next) => {
         let id = req.params.id;
         id = Validate(isID, id);
 
-        const data = await Prisma.data.findUnique({
+        const data = await Prisma.skill.findUnique({
             where: { id },
             include: {
                 category: true
@@ -59,10 +57,7 @@ const get = async (req, res, next) => {
         // HANDLE NOT FOUND
         if (data == null) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
 
-        res.status(200).json({
-            messege: "berhasil mendapat data skill berdasarkan id = " + id,
-            data
-        });
+        res.status(200).json(data);
 
     } catch (error) {
         next(error)

@@ -9,10 +9,7 @@ const getAll = async (req, res, next) => {
     try {
         const data = await getEducations();
 
-        res.status(200).json({
-            messege: "berhasil mendapat data educasi",
-            data
-        });
+        res.status(200).json(data);
     } catch (error) {
         next(error);
     }
@@ -29,17 +26,14 @@ const get = async (req, res, next) => {
         let id = req.params.id;
         id = Validate(isID, id);
 
-        const education = await Prisma.education.findUnique({
+        const data = await Prisma.education.findUnique({
             where: { id }
         });
 
         // HANDLE NOT FOUND
-        if (education == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
+        if (data == null) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
-        res.status(200).json({
-            messege: "berhasil mendapat data education berdasarkan id = " + id,
-            data: education
-        });
+        res.status(200).json(data);
 
     } catch (error) {
         next(error);

@@ -39,7 +39,6 @@ const getAll = async (req, res, next) => {
         const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
-            messege: "berhasil mendapat data project",
             data,
             total,
             page,
@@ -94,9 +93,7 @@ const get = async (req, res, next) => {
             include: {
                 photos: true,
                 skills: {
-                    include: {
-                        Skill: true
-                    }
+                    include: { Skill: true }
                 }
             }
         });
@@ -105,10 +102,7 @@ const get = async (req, res, next) => {
 
         formatData(data);
 
-        res.status(200).json({
-            messege: "berhasil mendapat data project berdasarkan id = " + id,
-            data
-        });
+        res.status(200).json(data);
     } catch (error) {
         next(error);
     }
