@@ -84,14 +84,11 @@ const post = async (req, res, next) => {
             svg: data.svg
         }
 
-        const skill_data = await Prisma.skill.create({
+        const skill = await Prisma.skill.create({
             data: insert_data
         });
 
-        res.status(200).json({
-            message: "Berhasil menyimpan data skill",
-            data: skill_data
-        });
+        res.status(200).json(skill);
 
     } catch (error) {
         next(error);

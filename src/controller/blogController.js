@@ -27,7 +27,6 @@ const getAll = async (req, res, next) => {
         const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
-            messege: "berhasil mendapat data blog",
             data,
             total,
             page,
@@ -112,10 +111,7 @@ const post = async (req, res, next) => {
 
         formatData(data);
 
-        res.status(200).json({
-            messege: "berhasil menyimpan data ke blog",
-            data
-        });
+        res.status(200).json(data);
     } catch (error) {
         if (req.files) {
             for (const file of req.files) {
@@ -153,6 +149,7 @@ const put = async (req, res, next) => {
         // filter foto yang di pertahankan
         // current photos di filter berdasarkan id yang dipertahankan
         const keepsPhotos = currentPhotos.filter(idPhoto => idYangDiPertahankan.includes(idPhoto));
+        const photo_to_be_remove = currentBlog.photos.filter(Photo => !idYangDiPertahankan.includes(Photo));
 
         // hapus variable photo
         delete blog.photos;
@@ -179,12 +176,14 @@ const put = async (req, res, next) => {
             }
         });
 
+        // remove unuse photo
+        for (const photo of photo_to_be_remove) {
+            await fileService.removeFile(photo.path)
+        }
+
         formatData(data);
 
-        res.status(200).json({
-            messege: "berhasil mengupdate data blog",
-            data
-        });
+        res.status(200).json(data);
     } catch (error) {
         if (req.files) {
             // buang file jika error
@@ -215,8 +214,6 @@ const updateTitle = async (req, res, next) => {
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
 
-        formatData(data);
-
         // EKSEKUSI PATCH
         const updateTitle = await Prisma.blog.update({
             where: { id },
@@ -226,10 +223,9 @@ const updateTitle = async (req, res, next) => {
             }
         });
 
-        res.status(200).json({
-            messege: "Berhasil update title blog",
-            data: updateTitle
-        })
+        formatData(updateTitle);
+
+        res.status(200).json(updateTitle);
 
     } catch (error) {
         next(error);
@@ -247,7 +243,10 @@ const remove = async (req, res, next) => {
 
         const currentBlog = await Prisma.blog.findUnique({
             where: { id },
-            select: { id: true }
+            select: { id: true },
+            include: {
+                photos: true
+            }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
@@ -257,10 +256,16 @@ const remove = async (req, res, next) => {
             where: { id }
         });
 
+        // hapus data
+        for (const photo of currentBlog.photos) {
+            await fileService.removeFile(photo.path)
+        }
+
         res.status(200).json({
-            messege: "Berhasil menghapus data blog"
+            messege: "Success"
         });
     } catch (error) {
+        console.log(error)
         next(error);
     }
 }

@@ -113,19 +113,24 @@ const portfolio = async (req, res, next) => {
         // kalkulasi project pertama -> startDate dengan tanggal sekarang, check perbandingannya berapa tahun
 
         // ambil project aray terakhir
-        const firstProject = projects.findLast(p => true);
-        const firstProjectDate = dayjs(firstProject.startDate);
+        if (projects.length) {
+            const firstProject = projects.findLast(p => true);
+            const firstProjectDate = dayjs(firstProject.startDate);
+            profile.year_of_experience = dayjs().diff(firstProjectDate, "year");
+            profile.month_of_experience = dayjs().diff(firstProjectDate, "month");
+        } else {
+            // default
+            profile.year_of_experience = 0;
+            profile.month_of_experience = 0;
 
-        profile.year_of_experience = dayjs().diff(firstProjectDate, "year");
-        profile.month_of_experience = dayjs().diff(firstProjectDate, "month");
+        }
 
-
-        res.status(200).json({
+        return res.status(200).json({
             profile,
-            projects,
-            experience,
-            education,
             skills,
+            education,
+            experience,
+            projects,
             blogs
         });
     } catch (error) {

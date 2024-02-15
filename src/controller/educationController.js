@@ -48,14 +48,11 @@ const post = async (req, res, next) => {
 
         education = Validate(isEducation, education)
 
-        const newEducation = await Prisma.education.create({
+        const data = await Prisma.education.create({
             data: education
         })
 
-        res.status(200).json({
-            messege: "berhasil mengubah data education sebagian berdasarkan id",
-            data: newEducation
-        });
+        res.status(200).json(data);
 
     } catch (error) {
         next(error);
@@ -85,10 +82,7 @@ const put = async (req, res, next) => {
             data
         });
 
-        res.status(200).json({
-            messege: "Berhasil ubah data education seluruhnya",
-            data
-        });
+        res.status(200).json(data);
     } catch (error) {
         next(error);
     }
@@ -126,7 +120,7 @@ const remove = async (req, res, next) => {
         });
 
         res.status(200).json({
-            messege: "berhasil menghapus data education"
+            messege: "Success"
         });
 
     } catch (error) {

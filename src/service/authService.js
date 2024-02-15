@@ -4,18 +4,24 @@ dotenv.config();
 
 import jwt from 'jsonwebtoken';
 import { Prisma } from '../application/prisma.js';
+import cookieParser from 'cookie-parser';
 
 
 const createToken = (res, email, age = process.env.SESSION_AGE) => {
     // return token
     const jwtSecret = process.env.JWT_SECRET;
 
-    var token = jwt.sign({ email: email }, jwtSecret, {
-        expiresIn: age
-    });
+    var token = jwt.sign({ email: email },
+        jwtSecret,
+        { expiresIn: age }
+    );
 
     // SEND TOKEN TO COOKIE
-    res.cookie("token", token);
+    const maxAge = 24 * 60 * 60 * 1000;
+    let cookieConfig = {
+        maxAge: maxAge
+    }
+    res.cookie("token", token, cookieConfig);
 
     return token;
 

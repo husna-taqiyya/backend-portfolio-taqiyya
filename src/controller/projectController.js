@@ -159,7 +159,6 @@ const post = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {
@@ -199,6 +198,7 @@ const put = async (req, res, next) => {
         // filter foto yang di pertahankan
         // current photos di filter berdasarkan id yang dipertahankan
         const keepsPhotos = currentPhotos.filter(idPhoto => idYangDiPertahankan.includes(idPhoto));
+        const photo_to_be_remove = currentProject.photos.filter(photo => !idYangDiPertahankan.includes(photo));
 
         // hapus variable photo
         delete project.photos;
@@ -206,11 +206,14 @@ const put = async (req, res, next) => {
         // simpan foto baru
         const newPhotos = fileService.getUploadedPhotos(req);
 
-        const skills = project.skills.map(s => {
-            return {
-                skillId: s
-            }
-        });
+        let skills = [];
+        if (project.skills) {
+            skills = project.skills.map(s => {
+                return {
+                    skillId: s
+                }
+            })
+        }
 
         // delete skill from data update
         delete project.skills;
@@ -237,21 +240,21 @@ const put = async (req, res, next) => {
             include: {
                 photos: true,
                 skills: {
-                    include: {
-                        Skill: true
-                    }
+                    include: { Skill: true }
                 }
             }
         });
 
+        // remove unuse photo
+        for (const photo of photo_to_be_remove.photos) {
+            await fileService.removeFile(photo.path)
+        }
+
         formatData(data);
 
-        res.status(200).json({
-            messege: "Berhasil ubah data project berdasarkan id",
-            data
-        });
+        res.status(200).json(data);
+
     } catch (error) {
-        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {
@@ -273,20 +276,30 @@ const remove = async (req, res, next) => {
 
         const currentProject = await Prisma.project.findUnique({
             where: { id },
-            select: { id: true }
+            include: {
+                photos: true
+            }
         });
 
         if (!currentProject) throw new ResponseError(404, `project dengan ${id} tidak ditemukan`);
+        console.log(currentProject)
 
+        // throw new Error('test')
         // EKSEKUSI DELETE
         await Prisma.project.delete({
             where: { id }
         });
 
+        // remove unuse photo
+        for (const photo of currentProject.photos) {
+            await fileService.removeFile(photo.path)
+        }
+
         res.status(200).json({
-            messege: "Berhasil menghapus data project"
+            messege: "Success"
         });
     } catch (error) {
+        console.log(error)
         next(error);
     }
 }

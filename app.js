@@ -29,15 +29,10 @@ app.use(express.json());
 //untuk membaca cookies
 app.use(cookieParser());
 
-//belajar middleware => logging
-app.use(logging);
-
-// CREATE FOLDER UPLOADS
-fileService.createFolder('./uploads');
-
 //cors
 app.use(cors({
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000',
+    credentials: true
 }));
 
 // SET STATIC FILES
@@ -51,7 +46,14 @@ app.use('/uploads', async (req, res) => {
             message: "file not found"
         })
     }
-})
+});
+
+//belajar middleware => logging
+app.use(logging);
+
+// CREATE FOLDER UPLOADS
+fileService.createFolder('./uploads');
+
 
 // PUBLIC API / TANPA LOGIN
 app.use(routerPublic);
