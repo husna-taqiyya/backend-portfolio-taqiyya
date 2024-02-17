@@ -5,7 +5,7 @@ dotenv.config();
 import { Prisma } from "../application/prisma.js";
 import { Validate } from "../application/validate.js"
 import { ResponseError } from "../error/responseError.js";
-import { loginValidation } from "../validation/authValidation.js";
+import { loginValidation, updateUserValidation } from "../validation/authValidation.js";
 import bcrypt from 'bcrypt';
 import authService from '../service/authService.js';
 
@@ -90,8 +90,41 @@ const get = async (req, res, next) => {
     }
 }
 
+const put = async (req, res, next) => {
+    try {
+        let data = req.body;
+
+        data = Validate(updateUserValidation, data);
+
+        // remove confirm password
+        delete data.confirm_password;
+
+        // update password to hase
+        data.password = await bcrypt.hash(data.password, 10);
+
+        // get current user
+        const currentUser = await Prisma.user.findFirstOrThrow();
+
+        const updateUser = await Prisma.user.update({
+            where: { email: currentUser.email },
+            data: data,
+            select: {
+                name: true,
+                email: true
+            }
+        });
+
+        res.status(200).json(updateUser)
+
+    } catch (error) {
+        console.log(error)
+        next(error);
+    }
+}
+
 export default {
     login,
     logout,
-    get
+    get,
+    put
 }
