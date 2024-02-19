@@ -40,7 +40,7 @@ const login = async (req, res, next) => {
         next(error);
     }
 
-}
+};
 
 
 const logout = async (req, res, next) => {
@@ -70,7 +70,7 @@ const logout = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
 // GET USER DATA
 const get = async (req, res, next) => {
@@ -88,22 +88,30 @@ const get = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
 const put = async (req, res, next) => {
     try {
         let data = req.body;
 
         data = Validate(updateUserValidation, data);
+        // name , email, current_password, password, confirm_pasword
+
+        // get current user
+        const currentUser = await Prisma.user.findFirstOrThrow();
+
+
+        // currentUser.password == current_password
+        const checkPassword = await bcrypt.compare(data.current_password, currentUser.password);
+        if (!checkPassword) throw new ResponseError(400, "current password is invalid");
 
         // remove confirm password
+        delete data.current_password;
         delete data.confirm_password;
 
         // update password to hase
         data.password = await bcrypt.hash(data.password, 10);
 
-        // get current user
-        const currentUser = await Prisma.user.findFirstOrThrow();
 
         const updateUser = await Prisma.user.update({
             where: { email: currentUser.email },
@@ -114,13 +122,12 @@ const put = async (req, res, next) => {
             }
         });
 
-        res.status(200).json(updateUser)
+        res.status(200).json(updateUser);
 
     } catch (error) {
-        console.log(error)
         next(error);
     }
-}
+};
 
 export default {
     login,
