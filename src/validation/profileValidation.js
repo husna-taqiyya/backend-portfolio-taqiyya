@@ -12,7 +12,6 @@ const nonRequired = {
     twitter: isURI,
     linkedin: isURI,
     discord: isURI,
-    job: isString100,
 };
 
 const isCreateProfile = Joi.object({
@@ -24,6 +23,7 @@ const isCreateProfile = Joi.object({
     country: isString100.required(),
     addres: isText.required(),
     phone: isString100.required(),
+    job: isString100.required(),
     ...nonRequired
 });
 
@@ -36,11 +36,12 @@ const isUpdateProfile = Joi.object({
     country: isString100,
     addres: isText,
     phone: isString100,
+    job: isString100,
     ...nonRequired
 });
 
 
 export {
     isCreateProfile,
-    isUpdateProfile,
+    isUpdateProfile
 }

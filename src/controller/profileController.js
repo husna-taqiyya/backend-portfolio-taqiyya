@@ -143,14 +143,23 @@ const getProfile = async () => {
     if (!profile) {
         // buat data dummy disini
         profile = {
-            email: "example@gamil.com",
+            email: "example@gmail.com",
             firstname: "-",
             lastname: "-",
-            dob: "1900-10-10",
+            dob: "2000-10-10",
             addres: "-",
             job: "-",
             city: "-",
-            country: "-"
+            country: "-",
+            avatar: null,
+            bio: null,
+            github: null,
+            gitlab: null,
+            instagram: null,
+            facebook: null,
+            twitter: null,
+            linkedin: null,
+            discord: null
         };
     }
 
