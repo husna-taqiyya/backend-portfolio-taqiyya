@@ -1,7 +1,7 @@
 import { Prisma } from '../application/prisma.js';
 import { Validate } from '../application/validate.js';
 import fileService from '../service/fileService.js';
-import { isProfile } from '../validation/profileValidation.js';
+import { isCreateProfile, isUpdateProfile } from '../validation/profileValidation.js';
 import educationController from './educationController.js';
 import experienceController from './experienceController.js';
 import projectController from './projectController.js';
@@ -37,18 +37,19 @@ const put = async (req, res, next) => {
             data.avatar = avatar;
         }
 
-        // validasi
-        data = Validate(isProfile, data)
-
         let dataProfile = {};
         if (profile == null) {
             // JIKA NULL, MAKA BUAT DATA BARU - CREATE
-            dataProfile = await Prisma.profile.create({
-                data: data
-            });
+            // validasi
+            data = Validate(isCreateProfile, data);
+
+            dataProfile = await Prisma.profile.create({ data });
+
 
         } else {
             // JIKA ADA ISINYA, UPDATE DATA TERSEBUT - UPDATE
+            data = Validate(isUpdateProfile, data);
+
             dataProfile = await Prisma.profile.update({
                 where: {
                     email: profile.email
@@ -66,23 +67,19 @@ const put = async (req, res, next) => {
             }
         }
 
-        res.status(200).json({
-            messege: "Berhasil ubah data profile seluruhnya berdasarkan id",
-            data: dataProfile
-        });
+        res.status(200).json({ dataProfile });
 
     } catch (error) {
+        console.log(error);
         // jika error && ada file. maka file dihapus
-        console.log("andle error")
+        console.log("handle error")
 
         if (req.file) {
             // handle buang file
             await fileService.rm(req.file.path)
-
         }
         next(error);
     }
-
 }
 
 const portfolio = async (req, res, next) => {
@@ -137,7 +134,6 @@ const portfolio = async (req, res, next) => {
         next(error);
     }
 }
-
 
 const getProfile = async () => {
 

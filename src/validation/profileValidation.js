@@ -1,18 +1,9 @@
 import Joi from "joi";
 import { isString100, isText, isURI } from "./mainValidation.js";
 
-const isProfile = Joi.object({
-    email: Joi.string().trim().email().lowercase().required(),
-    firstname: isString100.required(),
-    lastname: isString100.required(),
+const nonRequired = {
     avatar: Joi.string().max(255).optional(),
-    dob: Joi.date().less('now'),
-    addres: isText,
     bio: isText,
-    city: isString100,
-    country: isString100,
-    job: isString100,
-    phone: isString100,
     website: isURI,
     github: isURI,
     gitlab: isURI,
@@ -20,9 +11,35 @@ const isProfile = Joi.object({
     facebook: isURI,
     twitter: isURI,
     linkedin: isURI,
-    discord: isURI
-})
+    discord: isURI,
+    job: isString100,
+    phone: isString100
+};
+
+const isCreateProfile = Joi.object({
+    email: Joi.string().trim().email().lowercase().required(),
+    firstname: isString100.required(),
+    lastname: isString100.required(),
+    dob: Joi.date().less('now').required(),
+    city: isString100.required(),
+    country: isString100.required(),
+    addres: isText.required(),
+    ...nonRequired
+});
+
+const isUpdateProfile = Joi.object({
+    email: Joi.string().trim().email().lowercase(),
+    firstname: isString100,
+    lastname: isString100,
+    dob: Joi.date().less('now'),
+    city: isString100,
+    country: isString100,
+    addres: isText,
+    ...nonRequired
+});
+
 
 export {
-    isProfile
+    isCreateProfile,
+    isUpdateProfile,
 }

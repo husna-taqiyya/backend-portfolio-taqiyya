@@ -100,18 +100,18 @@ const put = async (req, res, next) => {
         // get current user
         const currentUser = await Prisma.user.findFirstOrThrow();
 
-
         // currentUser.password == current_password
-        const checkPassword = await bcrypt.compare(data.current_password, currentUser.password);
-        if (!checkPassword) throw new ResponseError(400, "current password is invalid");
+        if (data.current_password) {
+            const checkPassword = await bcrypt.compare(data.current_password, currentUser.password);
+            if (!checkPassword) throw new ResponseError(400, "current password is invalid");
 
-        // remove confirm password
-        delete data.current_password;
-        delete data.confirm_password;
+            // remove confirm password
+            delete data.current_password;
+            delete data.confirm_password;
 
-        // update password to hase
-        data.password = await bcrypt.hash(data.password, 10);
-
+            // update password to hase
+            data.password = await bcrypt.hash(data.password, 10);
+        }
 
         const updateUser = await Prisma.user.update({
             where: { email: currentUser.email },
