@@ -13,7 +13,6 @@ const nonRequired = {
     linkedin: isURI,
     discord: isURI,
     job: isString100,
-    phone: isString100
 };
 
 const isCreateProfile = Joi.object({
@@ -24,6 +23,7 @@ const isCreateProfile = Joi.object({
     city: isString100.required(),
     country: isString100.required(),
     addres: isText.required(),
+    phone: isString100.required(),
     ...nonRequired
 });
 
@@ -35,6 +35,7 @@ const isUpdateProfile = Joi.object({
     city: isString100,
     country: isString100,
     addres: isText,
+    phone: isString100,
     ...nonRequired
 });
 
