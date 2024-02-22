@@ -3,15 +3,15 @@ import { isString100, isText, isURI } from "./mainValidation.js";
 
 const nonRequired = {
     avatar: Joi.string().max(255).optional(),
-    bio: isText,
-    website: isURI,
-    github: isURI,
-    gitlab: isURI,
-    instagram: isURI,
-    facebook: isURI,
-    twitter: isURI,
-    linkedin: isURI,
-    discord: isURI,
+    bio: isText.allow(null, ''),
+    website: isURI.allow(null, ''),
+    github: isURI.allow(null, ''),
+    gitlab: isURI.allow(null, ''),
+    instagram: isURI.allow(null, ''),
+    facebook: isURI.allow(null, ''),
+    twitter: isURI.allow(null, ''),
+    linkedin: isURI.allow(null, ''),
+    discord: isURI.allow(null, ''),
 };
 
 const isCreateProfile = Joi.object({
