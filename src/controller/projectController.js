@@ -159,6 +159,7 @@ const post = async (req, res, next) => {
         });
 
     } catch (error) {
+        console.log(error);
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {

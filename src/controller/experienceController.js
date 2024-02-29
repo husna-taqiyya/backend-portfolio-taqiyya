@@ -26,10 +26,7 @@ const getAll = async (req, res, next) => {
     try {
         const data = await getExperiences();
 
-        res.status(200).json({
-            messege: "berhasil mendapat data experience",
-            data
-        });
+        res.status(200).json(data);
     } catch (error) {
         next(error);
     }
@@ -54,14 +51,14 @@ const get = async (req, res, next) => {
         let id = req.params.id;
         id = Validate(isID, id);
 
-        const experience = await Prisma.experience.findUnique({
+        const experience = await Prisma.experience.findFirst({
             where: { id }
         });
 
         // HANDLE NOT FOUND
         if (experience == null) throw new ResponseError(404, `experience dengan ${id} tidak ditemukan`);
 
-        formatData(data);
+        formatData(experience);
 
         res.status(200).json({
             messege: "berhasil mendapat data experience berdasarkan id = " + id,
@@ -77,23 +74,18 @@ const get = async (req, res, next) => {
 // PATH : METHOD UNTUK MENYIMPAN DATA education
 const post = async (req, res, next) => {
     try {
-        let experience = req.body;
+        let data = req.body;
 
+        data = Validate(isExperience, data)
 
-        experience = Validate(isExperience, experience)
+        const newExperience = await Prisma.experience.create({ data });
 
-        const newExperience = await Prisma.experience.create({
-            data: experience
-        })
+        formatData(newExperience);
 
-        formatData(data);
-
-        res.status(200).json({
-            messege: "berhasil mengubah data experience sebagian berdasarkan id",
-            data: newExperience
-        });
+        res.status(200).json({ data: newExperience });
 
     } catch (error) {
+        console.log(error);
         next(error);
     }
 }

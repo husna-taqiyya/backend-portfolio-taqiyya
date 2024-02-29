@@ -79,7 +79,7 @@ const put = async (req, res, next) => {
 
         const data = await Prisma.education.update({
             where: { id },
-            data
+            data: education
         });
 
         res.status(200).json(data);

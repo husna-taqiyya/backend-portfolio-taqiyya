@@ -35,6 +35,7 @@ const getAll = async (req, res, next) => {
         });
 
     } catch (error) {
+        console.log(error);
         next(error);
     }
 }
@@ -83,6 +84,7 @@ const get = async (req, res, next) => {
 
         res.status(200).json(data);
     } catch (error) {
+        console.log(error);
         next(error);
     }
 }
@@ -113,6 +115,7 @@ const post = async (req, res, next) => {
 
         res.status(200).json(data);
     } catch (error) {
+        console.log(error);
         if (req.files) {
             for (const file of req.files) {
                 await fileService.removeFile(file.path);
