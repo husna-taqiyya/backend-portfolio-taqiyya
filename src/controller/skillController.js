@@ -8,14 +8,17 @@ import { isSkill } from "../validation/skillValidation.js";
 // PATH : METHOD 
 const getAll = async (req, res) => {
     const data = await Prisma.skill.findMany({
-        include: { category: true }
-    })
-
-
-    res.status(200).json({
-        messege: "berhasil ambil data skill",
-        data
+        include: {
+            category: true,
+            _count: {
+                select: {
+                    projects: true
+                }
+            }
+        },
     });
+
+    res.status(200).json(data);
 }
 
 // GET SKILL BY CATEGORY
@@ -24,6 +27,19 @@ const getSkillByCategory = async (req, res, next) => {
         const data = await handleSkillByCategory();
 
         res.status(200).json(data)
+    } catch (error) {
+        next(error);
+    }
+}
+
+// GET ALL CATEGORY
+const getAllCategory = async (req, res, next) => {
+    try {
+        const data = await Prisma.skillCategory.findMany({
+            orderBy: { title: 'asc' }
+        });
+
+        res.status(200).json(data);
     } catch (error) {
         next(error);
     }
@@ -158,8 +174,9 @@ const remove = async (req, res, next) => {
 
         const currentSkill = await Prisma.skill.findUnique({
             where: { id },
-            select: { id: true }
+            include: { category: true }
         });
+        console.log(currentSkill)
 
         if (!currentSkill) throw new ResponseError(404, `skill dengan ${id} tidak ditemukan`);
 
@@ -170,14 +187,15 @@ const remove = async (req, res, next) => {
 
         // remove category
         // id category sebelumnya
-        const previous_skill_id = currentSkill.skillCategoryId;
-        await skillService.remove_category(previous_skill_id);
+        // const previous_skill_id = currentSkill.id;
+        await skillService.remove_category(currentSkill.category.id);
 
 
         res.status(200).json({
             messege: "Success"
         });
     } catch (error) {
+        console.log(error)
         next(error);
     }
 }
@@ -185,6 +203,7 @@ const remove = async (req, res, next) => {
 export default {
     getAll,
     getSkillByCategory,
+    getAllCategory,
     handleSkillByCategory,
     get,
     post,

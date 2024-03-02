@@ -108,7 +108,7 @@ const put = async (req, res, next) => {
 
         if (!currentExperience) throw new ResponseError(404, `experience dengan ${id} tidak ditemukan`);
 
-        formatData(data);
+        formatData(currentExperience);
 
         const updateData = await Prisma.experience.update({
             where: { id },
@@ -120,6 +120,7 @@ const put = async (req, res, next) => {
             data: updateData
         });
     } catch (error) {
+        console.log(error)
         next(error);
     }
 }
