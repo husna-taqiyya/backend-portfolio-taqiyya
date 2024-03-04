@@ -22,8 +22,14 @@ const getAll = async (req, res, next) => {
         // LIMIT
         const limit = parseInt(req.query.limit) || 10;
 
+        // SEARCH
+        const search = req.query.search || '';
+
+        console.log('search =========================');
+        console.log(search);
+
         // get total data
-        const { data, total } = await getByPage(page, limit);
+        const { data, total } = await getByPage(page, limit, search);
         const maxPage = Math.ceil(total / limit);
 
         res.status(200).json({
@@ -40,11 +46,16 @@ const getAll = async (req, res, next) => {
     }
 }
 
-const getByPage = async (page = 1, limit = 10) => {
+const getByPage = async (page = 1, limit = 10, search = '') => {
     // SKIP
     const skip = (page - 1) * limit;
 
     const data = await Prisma.blog.findMany({
+        where: {
+            title: {
+                contains: search
+            }
+        },
         take: limit,
         skip: skip,
         include: { photos: true },
