@@ -69,7 +69,13 @@ const getByPage = async (page = 1, limit = 10, search = '') => {
     }
 
     //get total data
-    const total = await Prisma.blog.count();
+    const total = await Prisma.blog.count({
+        where: {
+            title: {
+                contains: search
+            }
+        },
+    });
 
     return {
         data,
