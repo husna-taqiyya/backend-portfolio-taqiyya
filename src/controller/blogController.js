@@ -263,7 +263,6 @@ const remove = async (req, res, next) => {
 
         const currentBlog = await Prisma.blog.findUnique({
             where: { id },
-            select: { id: true },
             include: {
                 photos: true
             }

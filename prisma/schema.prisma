@@ -147,9 +147,9 @@ model Photo {
 
 // skill yang dipakai di project
 model ProjectSkill {
-  Skill     Skill?   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  Skill     Skill?   @relation(fields: [skillId], references: [id])
   skillId   Int
-  Project   Project? @relation(fields: [projectId], references: [id])
+  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId Int
 
   @@id([skillId, projectId])

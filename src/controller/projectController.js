@@ -116,18 +116,24 @@ const post = async (req, res, next) => {
 
         let project = req.body;
 
+        // jadikan end Date null
+        if (!project.endDate) project.endDate = null;
 
         //validate
         project = Validate(isProject, project)
 
+        // handle if no skills data
+        if (!project.skills) {
+            project.skills = [];
+        }
+
         // [{skillId: 5}, {skillId: 6}]
-        const skills = project.skills.map(s => {
-            return {
-                skillId: s
-            }
+        const skills = project.skills.map((s) => {
+            return { skillId: s };
         });
 
-        delete project.skills
+
+        // delete project.skills
 
         const data = await Prisma.project.create({
             data: {
@@ -153,10 +159,7 @@ const post = async (req, res, next) => {
 
         formatData(data);
 
-        res.status(200).json({
-            messege: "berhasil menyimpan data project sebagian berdasarkan id",
-            data
-        });
+        res.status(200).json(data);
 
     } catch (error) {
         console.log(error);
@@ -256,6 +259,7 @@ const put = async (req, res, next) => {
         res.status(200).json(data);
 
     } catch (error) {
+        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {
