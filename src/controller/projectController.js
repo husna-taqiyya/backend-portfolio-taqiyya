@@ -188,7 +188,7 @@ const put = async (req, res, next) => {
             where: { id },
             include: {
                 photos: true,
-                skills: true
+                skills: { include: { Skill: true } }
             }
 
         });
@@ -250,7 +250,7 @@ const put = async (req, res, next) => {
         });
 
         // remove unuse photo
-        for (const photo of photo_to_be_remove.photos) {
+        for (const photo of photo_to_be_remove) {
             await fileService.removeFile(photo.path)
         }
 
