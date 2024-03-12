@@ -155,9 +155,7 @@ const put = async (req, res, next) => {
 
         const currentBlog = await Prisma.blog.findUnique({
             where: { id },
-            include: {
-                photos: true
-            }
+            include: { photos: true }
         });
 
         if (!currentBlog) throw new ResponseError(404, `Blog dengan ${id} tidak ditemukan`);
@@ -191,9 +189,7 @@ const put = async (req, res, next) => {
                     create: newPhotos // add new photo
                 }
             },
-            include: {
-                photos: true
-            }
+            include: { photos: true }
         });
 
         // remove unuse photo
@@ -205,6 +201,7 @@ const put = async (req, res, next) => {
 
         res.status(200).json(data);
     } catch (error) {
+        console.log(error)
         if (req.files) {
             // buang file jika error
             for (const file of req.files) {

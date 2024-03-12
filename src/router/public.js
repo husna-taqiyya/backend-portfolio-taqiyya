@@ -9,10 +9,14 @@ import experienceController from "../controller/experienceController.js";
 
 export const routerPublic = express.Router();
 
+// USER
+routerPublic.post('/first_user', authController.createFirstUser)
+routerPublic.get('/is_user_exist', authController.isUserExist)
+
 // untuk login
 routerPublic.post('/login', authController.login);
 
-//get all blogs
+// get all blogs
 routerPublic.get('/blogs', blogController.getAll);
 // get blog by id
 routerPublic.get('/blog/:id', blogController.get);

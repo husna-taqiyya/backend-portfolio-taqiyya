@@ -20,7 +20,22 @@ const updateUserValidation = Joi.object({
         })
 });
 
+const createUserValidation = Joi.object({
+    name: Joi.string().label("Name"),
+    email: Joi.string().email().label("Email"),
+    password: Joi.string().min(6).max(100).label("Password"),
+    confirm_password: Joi.string().min(6).max(100)
+        .valid(Joi.ref('password'))
+        .label("Password Confirm")
+        .options({
+            messages: {
+                'any.only': '{(#label)} not match'
+            }
+        })
+});
+
 export {
     loginValidation,
-    updateUserValidation
+    updateUserValidation,
+    createUserValidation
 }
